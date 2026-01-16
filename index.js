@@ -61,15 +61,30 @@ function getTX(v) {
   return null;
 }
 
-function updateCau(game, phien, kq) {
-  if (lastPhien[game] === phien) return;
+function updateCau(game, phien, ketQua) {
+  if (!phien || !ketQua) return;
 
+  // Chưa có phiên cũ → chỉ set, KHÔNG cộng
+  if (!lastPhien[game]) {
+    lastPhien[game] = phien;
+    return;
+  }
+
+  // Phiên không đổi → KHÔNG cộng
+  if (String(phien) === String(lastPhien[game])) return;
+
+  // Phiên mới thật sự
   lastPhien[game] = phien;
-  if (!cauGame[game]) cauGame[game] = [];
-  cauGame[game].push(kq);
 
-  if (cauGame[game].length > 20) cauGame[game].shift();
-  saveAllCau();
+  if (!cauGame[game]) cauGame[game] = [];
+  cauGame[game].push(ketQua);
+
+  // Giữ tối đa 20 cầu
+  if (cauGame[game].length > 20) {
+    cauGame[game].shift();
+  }
+
+  saveAllCau(); // ghi file
 }
 
 function now() {
