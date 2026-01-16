@@ -4,9 +4,9 @@ import fs from "fs";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const CAU_FILE = "./cau_all_game.json";
+const FILE = "./cau_all_game.json";
 
-/* ================== GAME LIST ================== */
+/* ================= GAME LIST ================= */
 const GAMES = {
   lc79_tx: { name: "LC79_THUONG", url: "https://lc79md5-lun8.onrender.com/lc79/tx" },
   lc79_md5: { name: "LC79_MD5", url: "https://lc79md5-lun8.onrender.com/lc79/md5" },
@@ -23,36 +23,24 @@ const GAMES = {
   betvip_md5: { name: "BETVIP_MD5", url: "https://betvip.onrender.com/betvip/md5" }
 };
 
-/* ================== MEMORY ================== */
+/* ================= MEMORY ================= */
 let cauGame = {};
 let lastPhien = {};
-const gameData = {};
+let gameData = {};
 
-/* ================== LOAD FILE KHI START ================== */
-try {
-  if (fs.existsSync(CAU_FILE)) {
-    const saved = JSON.parse(fs.readFileSync(CAU_FILE, "utf8"));
-    cauGame = saved.cauGame || {};
-    lastPhien = saved.lastPhien || {};
-    console.log("✅ Đã load cầu ALL GAME từ file");
-  }
-} catch (e) {
-  console.log("❌ Lỗi đọc file cầu");
+/* ================= LOAD FILE ================= */
+if (fs.existsSync(FILE)) {
+  const data = JSON.parse(fs.readFileSync(FILE, "utf8"));
+  cauGame = data.cauGame || {};
+  lastPhien = data.lastPhien || {};
 }
 
-/* ================== SAVE FILE (DEBOUNCE) ================== */
-let saveTimer = null;
-function saveAllCau() {
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    fs.writeFileSync(
-      CAU_FILE,
-      JSON.stringify({ cauGame, lastPhien }, null, 2)
-    );
-  }, 3000);
+/* ================= SAVE FILE ================= */
+function saveFile() {
+  fs.writeFileSync(FILE, JSON.stringify({ cauGame, lastPhien }, null, 2));
 }
 
-/* ================== UTILS ================== */
+/* ================= UTILS ================= */
 function getTX(v) {
   if (!v) return null;
   v = v.toLowerCase();
@@ -61,48 +49,50 @@ function getTX(v) {
   return null;
 }
 
-function updateCau(game, phien, ketQua) {
-  if (!phien || !ketQua) return;
-
-  // Chưa có phiên cũ → chỉ set, KHÔNG cộng
-  if (!lastPhien[game]) {
-    lastPhien[game] = phien;
-    return;
-  }
-
-  // Phiên không đổi → KHÔNG cộng
-  if (String(phien) === String(lastPhien[game])) return;
-
-  // Phiên mới thật sự
-  lastPhien[game] = phien;
-
-  if (!cauGame[game]) cauGame[game] = [];
-  cauGame[game].push(ketQua);
-
-  // Giữ tối đa 20 cầu
-  if (cauGame[game].length > 20) {
-    cauGame[game].shift();
-  }
-
-  saveAllCau(); // ghi file
-}
-
 function now() {
   return new Date().toLocaleString("vi-VN", { hour12: false });
 }
 
-/* ================== AUTO FETCH 2.5s ================== */
+/* ========== UPDATE CAU (ANTI CẦU ẢO) ========= */
+function updateCau(game, phien, kq) {
+  phien = Number(phien);
+  if (!phien || !kq) return;
+
+  // lần đầu chỉ set phiên, KHÔNG cộng
+  if (lastPhien[game] === undefined) {
+    lastPhien[game] = phien;
+    saveFile();
+    return;
+  }
+
+  // chưa qua phiên mới
+  if (phien <= lastPhien[game]) return;
+
+  // qua phiên mới → cộng
+  lastPhien[game] = phien;
+
+  if (!cauGame[game]) cauGame[game] = [];
+  cauGame[game].push(kq);
+
+  if (cauGame[game].length > 20) cauGame[game].shift();
+  saveFile();
+}
+
+/* ================= AUTO FETCH ================= */
 function autoFetch(key, cfg) {
   setInterval(async () => {
     try {
       const res = await fetch(cfg.url);
       const raw = await res.json();
 
-      const phien = raw.phien || raw.round || raw.session || raw.id;
-      const ketQua = getTX(raw.ket_qua || raw.result);
-      if (!phien || !ketQua) return;
+      const phien_hien_tai =
+        raw.phien || raw.round || raw.session || raw.id;
 
-      updateCau(key, phien, ketQua);
+      const ket_qua = getTX(raw.ket_qua || raw.result);
+
+      if (!phien_hien_tai || !ket_qua) return;
+
+      updateCau(key, phien_hien_tai, ket_qua);
 
       const x1 = raw.xuc_xac_1 || raw.x1 || raw.dice1 || 0;
       const x2 = raw.xuc_xac_2 || raw.x2 || raw.dice2 || 0;
@@ -112,39 +102,34 @@ function autoFetch(key, cfg) {
       gameData[key] = {
         id: "Bi Nhoi Vip Pro",
         game: cfg.name,
-        phien,
-        ket_qua: ketQua,
+        phien_hien_tai: Number(phien_hien_tai),
+        phien_cuoi: lastPhien[key],
+        ket_qua,
         tong,
         cau: (cauGame[key] || []).join(""),
         cap_nhat_luc: now()
       };
-    } catch (e) {
-      console.log("❌ Lỗi fetch:", cfg.name);
-    }
+    } catch {}
   }, 2500);
 }
 
-/* ================== START ALL GAME ================== */
-Object.keys(GAMES).forEach((k) => autoFetch(k, GAMES[k]));
+/* ================= START ================= */
+Object.keys(GAMES).forEach(k => autoFetch(k, GAMES[k]));
 
-/* ================== API ================== */
+/* ================= API ================= */
 app.get("/api/:game", (req, res) => {
-  const k = req.params.game.toLowerCase();
-  res.json(gameData[k] || { error: "Game chưa có dữ liệu" });
+  const key = req.params.game;
+  res.json(gameData[key] || { error: "Game chưa có dữ liệu" });
 });
 
 app.get("/api", (req, res) => {
   const out = {};
   for (const k in gameData) {
-    out[GAMES[k].name] = {
-      phien: gameData[k].phien,
-      ket_qua: gameData[k].ket_qua,
-      cau: gameData[k].cau
-    };
+    out[GAMES[k].name] = gameData[k];
   }
   res.json(out);
 });
 
 app.listen(PORT, () => {
-  console.log("🔥 ALL GAME + SAVE FILE OK – PORT " + PORT);
+  console.log("🔥 ALL GAME API RUNNING – PORT " + PORT);
 });
