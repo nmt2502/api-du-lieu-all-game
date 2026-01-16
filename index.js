@@ -34,14 +34,27 @@ function loadData() {
   if (!fs.existsSync(DATA_FILE)) return {};
   return JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
 }
+
 function saveData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
+
 function now() {
   return new Date().toLocaleString("vi-VN");
 }
 
-/* ========= PARSE PHIÊN (CỐT LÕI) ========= */
+/* ========= MAP KẾT QUẢ -> T / X ========= */
+function mapKetQua(raw) {
+  if (!raw) return null;
+  const s = raw.toString().toLowerCase();
+
+  if (s === "t" || s.includes("tài")) return "T";
+  if (s === "x" || s.includes("xỉu")) return "X";
+
+  return null;
+}
+
+/* ========= PARSE PHIÊN CHUẨN ========= */
 function parsePhien(api) {
   const phienHienTai =
     api.phien_hien_tai ??
@@ -49,21 +62,19 @@ function parsePhien(api) {
     api.round_current ??
     null;
 
-  const phien =
+  const phienCuoi =
     api.phien ??
     api.round ??
     api.session ??
     null;
 
-  let phienDaQua = null;
-
-  if (phienHienTai !== null && phien !== null) {
-    if (phien < phienHienTai) {
-      phienDaQua = phien;
-    }
-  }
-
-  return { phienHienTai, phienDaQua };
+  return {
+    phienHienTai,
+    phienDaQua:
+      phienCuoi !== null && phienHienTai !== null && phienCuoi < phienHienTai
+        ? phienCuoi
+        : null
+  };
 }
 
 /* ========= UPDATE ALL GAME ========= */
@@ -82,10 +93,12 @@ async function updateAllGames() {
         api.total ??
         null;
 
-      const ketQua =
+      const rawKetQua =
         api.ket_qua ??
         api.result ??
         (tong !== null ? (tong >= 11 ? "T" : "X") : null);
+
+      const ketQua = mapKetQua(rawKetQua);
 
       /* ===== INIT GAME ===== */
       if (!store[game]) {
@@ -108,12 +121,14 @@ async function updateAllGames() {
       store[game].tong = tong;
       store[game].cap_nhat_luc = now();
 
-      /* ===== CỘNG CẦU CHỈ KHI XÁC ĐỊNH RÕ ===== */
+      /* ===== CỘNG CẦU KHI QUA PHIÊN ===== */
       if (
         phienDaQua !== null &&
         store[game].phien_cuoi !== phienDaQua
       ) {
-        store[game].cau += ketQua;
+        if (ketQua) {
+          store[game].cau += ketQua; // CHỈ T / X
+        }
         store[game].phien_cuoi = phienDaQua;
       }
 
