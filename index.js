@@ -6,7 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = "./data.json";
 
-/* ========= DANH SÁCH GAME ========= */
+/* ========= GAME LIST ========= */
 const GAMES = {
   LC79_THUONG: "https://lc79md5-lun8.onrender.com/lc79/tx",
   LC79_MD5: "https://lc79md5-lun8.onrender.com/lc79/md5",
@@ -29,55 +29,19 @@ const GAMES = {
   "68GB_MD5": "https://six8-api-5pje.onrender.com/68gbmd5"
 };
 
-/* ========= LOAD / SAVE ========= */
+/* ========= UTIL ========= */
 function loadData() {
   if (!fs.existsSync(DATA_FILE)) return {};
   return JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
 }
-
 function saveData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
-
 function now() {
   return new Date().toLocaleString("vi-VN");
 }
 
-/* ========= MAP KẾT QUẢ -> T / X ========= */
-function mapKetQua(raw) {
-  if (!raw) return null;
-  const s = raw.toString().toLowerCase();
-
-  if (s === "t" || s.includes("tài")) return "T";
-  if (s === "x" || s.includes("xỉu")) return "X";
-
-  return null;
-}
-
-/* ========= PARSE PHIÊN CHUẨN ========= */
-function parsePhien(api) {
-  const phienHienTai =
-    api.phien_hien_tai ??
-    api.current_round ??
-    api.round_current ??
-    null;
-
-  const phienCuoi =
-    api.phien ??
-    api.round ??
-    api.session ??
-    null;
-
-  return {
-    phienHienTai,
-    phienDaQua:
-      phienCuoi !== null && phienHienTai !== null && phienCuoi < phienHienTai
-        ? phienCuoi
-        : null
-  };
-}
-
-/* ========= UPDATE ALL GAME ========= */
+/* ========= CORE UPDATE ========= */
 async function updateAllGames() {
   const store = loadData();
 
@@ -86,28 +50,30 @@ async function updateAllGames() {
       const res = await axios.get(GAMES[game], { timeout: 8000 });
       const api = res.data;
 
-      const { phienHienTai, phienDaQua } = parsePhien(api);
+      const phien_hien_tai =
+        api.phien_hien_tai ??
+        api.current_round ??
+        api.round_current ??
+        api.phien ??
+        null;
 
       const tong =
         api.tong ??
         api.total ??
         null;
 
-      const rawKetQua =
-        api.ket_qua ??
-        api.result ??
-        (tong !== null ? (tong >= 11 ? "T" : "X") : null);
+      if (phien_hien_tai === null || tong === null) continue;
 
-      const ketQua = mapKetQua(rawKetQua);
+      const ket_qua = tong >= 11 ? "T" : "X";
 
-      /* ===== INIT GAME ===== */
+      /* INIT */
       if (!store[game]) {
         store[game] = {
           id: "Bi Nhoi Vip Pro",
           game,
-          phien_hien_tai: phienHienTai,
-          phien_cuoi: phienDaQua,
-          ket_qua: ketQua,
+          phien_hien_tai,
+          phien_cuoi: phien_hien_tai - 1,
+          ket_qua,
           tong,
           cau: "",
           cap_nhat_luc: now()
@@ -115,35 +81,30 @@ async function updateAllGames() {
         continue;
       }
 
-      /* ===== UPDATE LIVE ===== */
-      store[game].phien_hien_tai = phienHienTai;
-      store[game].ket_qua = ketQua;
+      /* ===== CHỈ KHI QUA PHIÊN ===== */
+      if (phien_hien_tai > store[game].phien_hien_tai) {
+        store[game].cau += ket_qua; // T / X
+        store[game].phien_cuoi = phien_hien_tai - 1;
+      }
+
+      store[game].phien_hien_tai = phien_hien_tai;
+      store[game].ket_qua = ket_qua;
       store[game].tong = tong;
       store[game].cap_nhat_luc = now();
 
-      /* ===== CỘNG CẦU KHI QUA PHIÊN ===== */
-      if (
-        phienDaQua !== null &&
-        store[game].phien_cuoi !== phienDaQua
-      ) {
-        if (ketQua) {
-          store[game].cau += ketQua; // CHỈ T / X
-        }
-        store[game].phien_cuoi = phienDaQua;
-      }
-
-    } catch (err) {
-      console.log("❌ Lỗi game:", game);
+    } catch (e) {
+      // API lỗi → bỏ qua, KHÔNG cộng cầu
+      continue;
     }
   }
 
   saveData(store);
 }
 
-/* ========= AUTO UPDATE 2.5s ========= */
+/* ========= AUTO BACKGROUND ========= */
 setInterval(updateAllGames, 2500);
 
-/* ========= API OUTPUT ========= */
+/* ========= API ========= */
 app.get("/api/all", (req, res) => {
   res.json(loadData());
 });
