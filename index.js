@@ -1,135 +1,138 @@
-import express from "express";
-import fetch from "node-fetch";
-import fs from "fs";
+const express = require("express");
+const fs = require("fs");
+const axios = require("axios");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const FILE = "./cau_all_game.json";
+const DATA_FILE = "./data.json";
 
-/* ================= GAME LIST ================= */
+/* ========= DANH SÁCH GAME ========= */
 const GAMES = {
-  lc79_tx: { name: "LC79_THUONG", url: "https://lc79md5-lun8.onrender.com/lc79/tx" },
-  lc79_md5: { name: "LC79_MD5", url: "https://lc79md5-lun8.onrender.com/lc79/md5" },
-  sunwin: { name: "SUNWIN", url: "https://sunwinsaygex-pcl2.onrender.com/api/sun" },
-  sicbo_sun: { name: "SICBO_SUN", url: "https://sicsun-9wes.onrender.com/predict" },
-  club789: { name: "789CLUB", url: "https://seven89-wkxd.onrender.com/api/789/tx" },
-  hit_tx: { name: "HITCLUB_THUONG", url: "https://hitclub-rksy.onrender.com/api/taixiu" },
-  hit_md5: { name: "HITCLUB_MD5", url: "https://hitclub-rksy.onrender.com/api/taixiumd5" },
-  sic_hit: { name: "SICBO_HITCLUB", url: "https://sichit-d15h.onrender.com/sicbo" },
-  gb68_md5: { name: "68GB_MD5", url: "https://six8-api-5pje.onrender.com/68gbmd5" },
-  b52_tx: { name: "B52_THUONG", url: "https://b52-si96.onrender.com/api/taixiu" },
-  b52_md5: { name: "B52_MD5", url: "https://b52-si96.onrender.com/api/taixiumd5" },
-  betvip_tx: { name: "BETVIP_THUONG", url: "https://betvip.onrender.com/betvip/tx" },
-  betvip_md5: { name: "BETVIP_MD5", url: "https://betvip.onrender.com/betvip/md5" }
+  LC79_THUONG: "https://lc79md5-lun8.onrender.com/lc79/tx",
+  LC79_MD5: "https://lc79md5-lun8.onrender.com/lc79/md5",
+
+  SUNWIN: "https://sunwinsaygex-pcl2.onrender.com/api/sun",
+  SICBO_SUN: "https://sicsun-9wes.onrender.com/predict",
+
+  "789CLUB": "https://seven89-wkxd.onrender.com/api/789/tx",
+
+  HITCLUB_THUONG: "https://hitclub-rksy.onrender.com/api/taixiu",
+  HITCLUB_MD5: "https://hitclub-rksy.onrender.com/api/taixiumd5",
+  SICBO_HITCLUB: "https://sichit-d15h.onrender.com/sicbo",
+
+  B52_THUONG: "https://b52-si96.onrender.com/api/taixiu",
+  B52_MD5: "https://b52-si96.onrender.com/api/taixiumd5",
+
+  BETVIP_THUONG: "https://betvip.onrender.com/betvip/tx",
+  BETVIP_MD5: "https://betvip.onrender.com/betvip/md5",
+
+  "68GB_MD5": "https://six8-api-5pje.onrender.com/68gbmd5"
 };
 
-/* ================= MEMORY ================= */
-let cauGame = {};
-let lastPhien = {};
-let gameData = {};
-
-/* ================= LOAD FILE ================= */
-if (fs.existsSync(FILE)) {
-  const data = JSON.parse(fs.readFileSync(FILE, "utf8"));
-  cauGame = data.cauGame || {};
-  lastPhien = data.lastPhien || {};
+/* ========= LOAD / SAVE ========= */
+function loadData() {
+  if (!fs.existsSync(DATA_FILE)) return {};
+  return JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
 }
-
-/* ================= SAVE FILE ================= */
-function saveFile() {
-  fs.writeFileSync(FILE, JSON.stringify({ cauGame, lastPhien }, null, 2));
+function saveData(data) {
+  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
-
-/* ================= UTILS ================= */
-function getTX(v) {
-  if (!v) return null;
-  v = v.toLowerCase();
-  if (v.includes("tài")) return "T";
-  if (v.includes("xỉu")) return "X";
-  return null;
-}
-
 function now() {
-  return new Date().toLocaleString("vi-VN", { hour12: false });
+  return new Date().toLocaleString("vi-VN");
 }
 
-/* ========== UPDATE CAU (ANTI CẦU ẢO) ========= */
-function updateCau(game, phien, kq) {
-  phien = Number(phien);
-  if (!phien || !kq) return;
+/* ========= PARSE PHIÊN (CỐT LÕI) ========= */
+function parsePhien(api) {
+  const phienHienTai =
+    api.phien_hien_tai ??
+    api.current_round ??
+    api.round_current ??
+    null;
 
-  // lần đầu chỉ set phiên, KHÔNG cộng
-  if (lastPhien[game] === undefined) {
-    lastPhien[game] = phien;
-    saveFile();
-    return;
+  const phien =
+    api.phien ??
+    api.round ??
+    api.session ??
+    null;
+
+  let phienDaQua = null;
+
+  if (phienHienTai !== null && phien !== null) {
+    if (phien < phienHienTai) {
+      phienDaQua = phien;
+    }
   }
 
-  // chưa qua phiên mới
-  if (phien <= lastPhien[game]) return;
-
-  // qua phiên mới → cộng
-  lastPhien[game] = phien;
-
-  if (!cauGame[game]) cauGame[game] = [];
-  cauGame[game].push(kq);
-
-  if (cauGame[game].length > 20) cauGame[game].shift();
-  saveFile();
+  return { phienHienTai, phienDaQua };
 }
 
-/* ================= AUTO FETCH ================= */
-function autoFetch(key, cfg) {
-  setInterval(async () => {
+/* ========= UPDATE ALL GAME ========= */
+async function updateAllGames() {
+  const store = loadData();
+
+  for (const game in GAMES) {
     try {
-      const res = await fetch(cfg.url);
-      const raw = await res.json();
+      const res = await axios.get(GAMES[game], { timeout: 8000 });
+      const api = res.data;
 
-      const phien_hien_tai =
-        raw.phien || raw.round || raw.session || raw.id;
+      const { phienHienTai, phienDaQua } = parsePhien(api);
 
-      const ket_qua = getTX(raw.ket_qua || raw.result);
+      const tong =
+        api.tong ??
+        api.total ??
+        null;
 
-      if (!phien_hien_tai || !ket_qua) return;
+      const ketQua =
+        api.ket_qua ??
+        api.result ??
+        (tong !== null ? (tong >= 11 ? "T" : "X") : null);
 
-      updateCau(key, phien_hien_tai, ket_qua);
+      /* ===== INIT GAME ===== */
+      if (!store[game]) {
+        store[game] = {
+          id: "Bi Nhoi Vip Pro",
+          game,
+          phien_hien_tai: phienHienTai,
+          phien_cuoi: phienDaQua,
+          ket_qua: ketQua,
+          tong,
+          cau: "",
+          cap_nhat_luc: now()
+        };
+        continue;
+      }
 
-      const x1 = raw.xuc_xac_1 || raw.x1 || raw.dice1 || 0;
-      const x2 = raw.xuc_xac_2 || raw.x2 || raw.dice2 || 0;
-      const x3 = raw.xuc_xac_3 || raw.x3 || raw.dice3 || 0;
-      const tong = raw.tong || (x1 + x2 + x3);
+      /* ===== UPDATE LIVE ===== */
+      store[game].phien_hien_tai = phienHienTai;
+      store[game].ket_qua = ketQua;
+      store[game].tong = tong;
+      store[game].cap_nhat_luc = now();
 
-      gameData[key] = {
-        id: "Bi Nhoi Vip Pro",
-        game: cfg.name,
-        phien_hien_tai: Number(phien_hien_tai),
-        phien_cuoi: lastPhien[key],
-        ket_qua,
-        tong,
-        cau: (cauGame[key] || []).join(""),
-        cap_nhat_luc: now()
-      };
-    } catch {}
-  }, 2500);
+      /* ===== CỘNG CẦU CHỈ KHI XÁC ĐỊNH RÕ ===== */
+      if (
+        phienDaQua !== null &&
+        store[game].phien_cuoi !== phienDaQua
+      ) {
+        store[game].cau += ketQua;
+        store[game].phien_cuoi = phienDaQua;
+      }
+
+    } catch (err) {
+      console.log("❌ Lỗi game:", game);
+    }
+  }
+
+  saveData(store);
 }
 
-/* ================= START ================= */
-Object.keys(GAMES).forEach(k => autoFetch(k, GAMES[k]));
+/* ========= AUTO UPDATE 2.5s ========= */
+setInterval(updateAllGames, 2500);
 
-/* ================= API ================= */
-app.get("/api/:game", (req, res) => {
-  const key = req.params.game;
-  res.json(gameData[key] || { error: "Game chưa có dữ liệu" });
+/* ========= API OUTPUT ========= */
+app.get("/api/all", (req, res) => {
+  res.json(loadData());
 });
 
-app.get("/api", (req, res) => {
-  const out = {};
-  for (const k in gameData) {
-    out[GAMES[k].name] = gameData[k];
-  }
-  res.json(out);
-});
-
-app.listen(PORT, () => {
-  console.log("🔥 ALL GAME API RUNNING – PORT " + PORT);
-});
+app.listen(PORT, () =>
+  console.log("🚀 Server chạy cổng", PORT)
+);
