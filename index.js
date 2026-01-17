@@ -172,7 +172,7 @@ async function updateAllGames() {
   save(CAU_FILE, cauStore);
 }
 
-setInterval(updateAllGames, 2500);
+setInterval(updateAllGames, 5500);
 
 /* ================= API ================= */
 app.get("/api/all", (req, res) => res.json(load(DATA_FILE)));
