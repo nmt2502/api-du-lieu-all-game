@@ -53,7 +53,12 @@ const SUNWIN_PATTERNS = {
   "4":     { pattern: ["X","X","X","X",], probability: 0.77, strength: 0.87 },
   "4-5":   { pattern: ["T","T","T","T","X","X","X","X","X",], probability: 0.79, strength: 0.89 },
   "5-4":   { pattern: ["X","X","X","X","X","T","T","T","T",], probability: 0.79, strength: 0.89 },
-  "6-6":   { pattern: ["T","T","T","T","T","T","X","X","X","X","X","X",], probability: 0.81, strength: 0.91 }
+  "6-6":   { pattern: ["T","T","T","T","T","T","X","X","X","X","X","X",], probability: 0.81, strength: 0.91 },
+  "7-3":   { pattern: ["X","X","X","X","X","X","X","T","T","T",], probability: 0.82, strength: 0.92 },
+  "7-3":   { pattern: ["T","T","T","T","T","T","T","X","X","X",], probability: 0.82, strength: 0.92 },
+  "3-7":   { pattern: ["X","X","X","T","T","T","T","T","T","T",], probability: 0.84, strength: 0.94 },
+  "1-2-3-3": { pattern: ["T","X","X","T","T","T","X","X","X",], probability: 0.77, strength: 0.97 },
+  "1-2-3-3": { pattern: ["X","T","T","X","X","X","T","T","T",], probability: 0.77, strength: 0.97 }
 };
 
 function algoSUNWIN(cau) {
