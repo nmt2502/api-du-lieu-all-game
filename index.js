@@ -1,4 +1,3 @@
-
 const express = require("express");
 const fs = require("fs");
 const axios = require("axios");
@@ -37,71 +36,97 @@ const GAMES = {
 };
 
 /* ================= UTIL ================= */
-const load = (f) => (fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : {});
+const load = (f) =>
+  fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : {};
 const save = (f, d) => fs.writeFileSync(f, JSON.stringify(d, null, 2));
 const now = () => new Date().toLocaleString("vi-VN");
 
-/* ================= THUẬT TOÁN ================= */
+/* ================= THUẬT TOÁN KHÁC (GIỮ NGUYÊN) ================= */
 
-// LC79
 function algoLC79(cau) {
-  if (cau.endsWith("TTT")) return ["Xỉu", 70];
-  if (cau.endsWith("XXX")) return ["Tài", 70];
-  return ["Tài", 55];
+  if (cau.endsWith("TTT")) return ["Xỉu", "70%"];
+  if (cau.endsWith("XXX")) return ["Tài", "70%"];
+  return ["Tài", "55%"];
 }
 
-// HITCLUB
 function algoHIT(cau) {
   const t = (cau.match(/T/g) || []).length;
   const x = (cau.match(/X/g) || []).length;
-  return t > x ? ["Xỉu", 60] : ["Tài", 60];
+  return t > x ? ["Xỉu", "60%"] : ["Tài", "60%"];
 }
 
-// SUNWIN fallback
-function algoSUN(cau) {
-  if (cau.endsWith("TXTX")) return ["Xỉu", 65];
-  if (cau.endsWith("XTXT")) return ["Tài", 65];
-  return ["Tài", 55];
+function algoSUN_FALLBACK(cau) {
+  if (cau.endsWith("TXTX")) return ["Xỉu", "65%"];
+  if (cau.endsWith("XTXT")) return ["Tài", "65%"];
+  return ["Tài", "55%"];
 }
 
-// B52
 function algoB52(cau) {
-  if (cau.endsWith("TT")) return ["Xỉu", 60];
-  if (cau.endsWith("XX")) return ["Tài", 60];
-  return ["Tài", 50];
+  if (cau.endsWith("TT")) return ["Xỉu", "60%"];
+  if (cau.endsWith("XX")) return ["Tài", "60%"];
+  return ["Tài", "50%"];
 }
 
-// BETVIP
 function algoBET(cau) {
-  if (!cau) return ["Tài", 50];
-  return cau.slice(-1) === "T" ? ["Tài", 55] : ["Xỉu", 55];
+  if (!cau) return ["Tài", "50%"];
+  return cau.slice(-1) === "T" ? ["Tài", "55%"] : ["Xỉu", "55%"];
 }
 
-// 789
 function algo789(cau) {
-  if (cau.endsWith("TTX")) return ["Xỉu", 65];
-  if (cau.endsWith("XXT")) return ["Tài", 65];
-  return ["Tài", 50];
+  if (cau.endsWith("TTX")) return ["Xỉu", "65%"];
+  if (cau.endsWith("XXT")) return ["Tài", "65%"];
+  return ["Tài", "50%"];
 }
 
-// LUCKY
 function algoLUCKY(cau) {
-  if (cau.endsWith("TTTT")) return ["Xỉu", 75];
-  if (cau.endsWith("XXXX")) return ["Tài", 75];
-  return ["Tài", 55];
+  if (cau.endsWith("TTTT")) return ["Xỉu", "75%"];
+  if (cau.endsWith("XXXX")) return ["Tài", "75%"];
+  return ["Tài", "55%"];
+}
+
+/* ================= SUNWIN – SO SÁNH CHUỖI CON ================= */
+
+function findBestMatch(cau, key, minLen = 5) {
+  let best = "";
+  for (let i = 0; i <= key.length - minLen; i++) {
+    for (let len = minLen; len <= key.length - i; len++) {
+      const sub = key.substr(i, len);
+      if (cau.includes(sub) && sub.length > best.length) {
+        best = sub;
+      }
+    }
+  }
+  return best;
+}
+
+function algoSUNWIN_TTOAN(cau) {
+  let bestKey = null;
+  let bestMatch = "";
+
+  for (const key in TTOAN_SUN) {
+    const match = findBestMatch(cau, key, 5);
+    if (match.length > bestMatch.length) {
+      bestMatch = match;
+      bestKey = key;
+    }
+  }
+
+  if (!bestKey) {
+    return ["Chờ Lấy Dữ Liệu Đưa Ra Dự Đoán", "0%"];
+  }
+
+  const percent = Math.min(
+    90,
+    Math.round(50 + (bestMatch.length / 8) * 40)
+  );
+
+  return [TTOAN_SUN[bestKey], percent + "%"];
 }
 
 /* ================= MAP GAME → ALGO ================= */
-function algo(game, cau) {
-  // ✅ SUNWIN dùng file ttoansun.json
-  if (game === "SUNWIN") {
-    const key = cau.slice(-8);
-    if (TTOAN_SUN[key]) {
-      return [TTOAN_SUN[key], 72];
-    }
-    return algoSUN(cau);
-  }
 
+function algo(game, cau) {
+  if (game === "SUNWIN") return algoSUNWIN_TTOAN(cau);
   if (game.startsWith("LC79")) return algoLC79(cau);
   if (game.startsWith("HITCLUB")) return algoHIT(cau);
   if (game.startsWith("SICBO_HITCLUB")) return algoHIT(cau);
@@ -110,18 +135,16 @@ function algo(game, cau) {
   if (game.startsWith("789")) return algo789(cau);
   if (game.startsWith("68GB")) return algoB52(cau);
   if (game.startsWith("LUCKY")) return algoLUCKY(cau);
-
-  return ["Tài", 50];
+  return ["Tài", "50%"];
 }
 
-/* ================= SICBO VỊ – CỐ ĐỊNH ================= */
+/* ================= SICBO VỊ – KHÔNG RANDOM ================= */
+
 function tinhViSicbo(tong, du_doan) {
   const TAI = [11, 12, 13, 14, 15, 16, 17];
   const XIU = [4, 5, 6, 7, 8, 9, 10];
-
   const pool = du_doan === "Tài" ? TAI : XIU;
   const base = tong % pool.length;
-
   return [
     pool[base],
     pool[(base + 2) % pool.length],
@@ -130,6 +153,7 @@ function tinhViSicbo(tong, du_doan) {
 }
 
 /* ================= BACKGROUND UPDATE ================= */
+
 async function updateAllGames() {
   const store = load(DATA_FILE);
   const cauStore = load(CAU_FILE);
@@ -137,8 +161,7 @@ async function updateAllGames() {
   for (const game in GAMES) {
     try {
       const api = (await axios.get(GAMES[game], { timeout: 8000 })).data;
-
-      const phien_hien_tai =
+      const phien =
         api.phien_hien_tai ??
         api.current_round ??
         api.round_current ??
@@ -146,15 +169,15 @@ async function updateAllGames() {
         null;
 
       const tong = api.tong ?? api.total ?? null;
-      if (!phien_hien_tai || tong === null) continue;
+      if (!phien || tong === null) continue;
 
       const ket_qua = tong >= 11 ? "Tài" : "Xỉu";
 
       if (!store[game]) {
         store[game] = {
           game,
-          phien_hien_tai,
-          phien_cuoi: phien_hien_tai - 1,
+          phien_hien_tai: phien,
+          phien_cuoi: phien - 1,
           tong,
           ket_qua,
           cap_nhat_luc: now()
@@ -163,12 +186,12 @@ async function updateAllGames() {
         continue;
       }
 
-      if (phien_hien_tai > store[game].phien_hien_tai) {
+      if (phien > store[game].phien_hien_tai) {
         cauStore[game] += ket_qua[0];
-        store[game].phien_cuoi = phien_hien_tai - 1;
+        store[game].phien_cuoi = phien - 1;
       }
 
-      store[game].phien_hien_tai = phien_hien_tai;
+      store[game].phien_hien_tai = phien;
       store[game].tong = tong;
       store[game].ket_qua = ket_qua;
       store[game].cap_nhat_luc = now();
@@ -183,17 +206,9 @@ setInterval(updateAllGames, 5500);
 
 /* ================= API ================= */
 
-// 🔹 API ALL
-app.get("/api/all", (req, res) => {
-  res.json(load(DATA_FILE));
-});
+app.get("/api/all", (req, res) => res.json(load(DATA_FILE)));
+app.get("/api/cau", (req, res) => res.json(load(CAU_FILE)));
 
-// 🔹 API CAU
-app.get("/api/cau", (req, res) => {
-  res.json(load(CAU_FILE));
-});
-
-// 🔹 API DUDOAN
 app.get("/api/dudoan/:game", (req, res) => {
   const game = req.params.game.toUpperCase();
   const store = load(DATA_FILE);
