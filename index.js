@@ -103,16 +103,13 @@ function algo(game, cau) {
   return ["Tài", 50];
 }
 
-/* ================= SICBO VỊ (NEW RULE) ================= */
+/* ================= SICBO VỊ (CHỈ 2 GAME) ================= */
 function tinhViSicboTheoTaiXiu(du_doan) {
   const TAI = [11, 12, 13, 14, 15, 16, 17];
   const XIU = [4, 5, 6, 7, 8, 9, 10];
 
-  const source = du_doan === "Tài" ? TAI : XIU;
-
-  // random 3 vị không trùng
-  const shuffled = source.sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, 3);
+  const pool = du_doan === "Tài" ? TAI : XIU;
+  return pool.sort(() => 0.5 - Math.random()).slice(0, 3);
 }
 
 /* ================= BACKGROUND UPDATE ================= */
@@ -151,7 +148,7 @@ async function updateAllGames() {
       }
 
       if (phien_hien_tai > store[game].phien_hien_tai) {
-        cauStore[game] += ket_qua[0]; // T / X
+        cauStore[game] += ket_qua[0];
         store[game].phien_cuoi = phien_hien_tai - 1;
       }
 
@@ -185,7 +182,9 @@ app.get("/api/dudoan/:game", async (req, res) => {
   const [du_doan, do_tin_cay] = algo(game, cau);
 
   let dudoan_vi = null;
-  if (game.includes("SICBO")) {
+
+  // ✅ CHỈ SICBO
+  if (game === "SICBO_SUN" || game === "SICBO_HITCLUB") {
     dudoan_vi = tinhViSicboTheoTaiXiu(du_doan);
   }
 
@@ -205,7 +204,7 @@ app.get("/api/dudoan/:game", async (req, res) => {
     ket_qua,
     phien_hien_tai: api.phien_hien_tai ?? null,
     du_doan,
-    dudoan_vi,
+    ...(dudoan_vi ? { dudoan_vi } : {}),
     do_tin_cay
   });
 });
