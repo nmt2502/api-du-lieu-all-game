@@ -7,7 +7,6 @@ const PORT = process.env.PORT || 3000;
 
 const DATA_FILE = "./data.json";
 const CAU_FILE = "./cau_all_game.json";
-const TTOAN_SUN = require("./ttoansun.json");
 
 /* ================= GAME LIST ================= */
 const GAMES = {
@@ -15,21 +14,17 @@ const GAMES = {
   LC79_MD5: "https://lc79md5-lun8.onrender.com/lc79/md5",
 
   SUNWIN: "https://sunwinsaygex-pcl2.onrender.com/api/sun",
-  SICBO_SUN: "https://sicsun-9wes.onrender.com/predict",
 
   "789CLUB": "https://seven89-wkxd.onrender.com/api/789/tx",
 
   HITCLUB_THUONG: "https://hitclub-rksy.onrender.com/api/taixiu",
   HITCLUB_MD5: "https://hitclub-rksy.onrender.com/api/taixiumd5",
-  SICBO_HITCLUB: "https://sichit-d15h.onrender.com/sicbo",
 
   B52_THUONG: "https://b52-si96.onrender.com/api/taixiu",
   B52_MD5: "https://b52-si96.onrender.com/api/taixiumd5",
 
   BETVIP_THUONG: "https://betvip.onrender.com/betvip/tx",
   BETVIP_MD5: "https://betvip.onrender.com/betvip/md5",
-
-  "68GB_MD5": "https://six8-api-5pje.onrender.com/68gbmd5",
 
   LUCKYWIN_TX: "https://luckywingugu.onrender.com/luck8/tx",
   LUCKYWIN_MD5: "https://luckywingugu.onrender.com/luck/md5"
@@ -41,7 +36,50 @@ const load = (f) =>
 const save = (f, d) => fs.writeFileSync(f, JSON.stringify(d, null, 2));
 const now = () => new Date().toLocaleString("vi-VN");
 
-/* ================= THUẬT TOÁN KHÁC (GIỮ NGUYÊN) ================= */
+/* ================= SUNWIN THUẬT TOÁN ================= */
+
+const SUNWIN_PATTERNS = {
+  "1-1":   { pattern: ["T","X","T","X"], probability: 0.7,  strength: 0.8 },
+  "1-2-1": { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
+  "2-1-2": { pattern: ["T","T","X","T","T"], probability: 0.68, strength: 0.78 },
+  "3-1":   { pattern: ["T","T","T","X"], probability: 0.72, strength: 0.82 },
+  "1-3":   { pattern: ["T","X","X","X"], probability: 0.72, strength: 0.82 },
+  "2-2":   { pattern: ["T","T","X","X"], probability: 0.66, strength: 0.76 },
+  "2-3":   { pattern: ["T","T","X","X","X"], probability: 0.71, strength: 0.81 },
+  "3-2":   { pattern: ["T","T","T","X","X"], probability: 0.73, strength: 0.83 },
+  "4-1":   { pattern: ["T","T","T","T","X"], probability: 0.76, strength: 0.86 },
+  "1-4":   { pattern: ["T","X","X","X","X"], probability: 0.76, strength: 0.86 }
+};
+
+function algoSUNWIN(cau) {
+  if (!cau || cau.length < 4) {
+    return ["Chờ Lấy Dữ Liệu Đưa Ra Dự Đoán", "0%"];
+  }
+
+  let best = null;
+  let bestLen = 0;
+
+  for (const key in SUNWIN_PATTERNS) {
+    const pat = SUNWIN_PATTERNS[key].pattern.join("");
+    if (cau.includes(pat) && pat.length > bestLen) {
+      best = SUNWIN_PATTERNS[key];
+      bestLen = pat.length;
+    }
+  }
+
+  if (!best) {
+    return ["Chờ Lấy Dữ Liệu Đưa Ra Dự Đoán", "0%"];
+  }
+
+  const last = cau.slice(-1);
+  const du_doan = last === "T" ? "Xỉu" : "Tài";
+
+  const percent = Math.round(best.probability * best.strength * 100);
+
+  return [du_doan, percent + "%"];
+}
+
+/* ================= THUẬT TOÁN KHÁC ================= */
 
 function algoLC79(cau) {
   if (cau.endsWith("TTT")) return ["Xỉu", "70%"];
@@ -53,12 +91,6 @@ function algoHIT(cau) {
   const t = (cau.match(/T/g) || []).length;
   const x = (cau.match(/X/g) || []).length;
   return t > x ? ["Xỉu", "60%"] : ["Tài", "60%"];
-}
-
-function algoSUN_FALLBACK(cau) {
-  if (cau.endsWith("TXTX")) return ["Xỉu", "65%"];
-  if (cau.endsWith("XTXT")) return ["Tài", "65%"];
-  return ["Tài", "55%"];
 }
 
 function algoB52(cau) {
@@ -84,75 +116,20 @@ function algoLUCKY(cau) {
   return ["Tài", "55%"];
 }
 
-/* ================= SUNWIN – SO SÁNH CHUỖI CON ================= */
-
-function findBestMatch(cau, key, minLen = 5) {
-  let best = "";
-  for (let i = 0; i <= key.length - minLen; i++) {
-    for (let len = minLen; len <= key.length - i; len++) {
-      const sub = key.substr(i, len);
-      if (cau.includes(sub) && sub.length > best.length) {
-        best = sub;
-      }
-    }
-  }
-  return best;
-}
-
-function algoSUNWIN_TTOAN(cau) {
-  let bestKey = null;
-  let bestMatch = "";
-
-  for (const key in TTOAN_SUN) {
-    const match = findBestMatch(cau, key, 5);
-    if (match.length > bestMatch.length) {
-      bestMatch = match;
-      bestKey = key;
-    }
-  }
-
-  if (!bestKey) {
-    return ["Chờ Lấy Dữ Liệu Đưa Ra Dự Đoán", "0%"];
-  }
-
-  const percent = Math.min(
-    90,
-    Math.round(50 + (bestMatch.length / 8) * 40)
-  );
-
-  return [TTOAN_SUN[bestKey], percent + "%"];
-}
-
 /* ================= MAP GAME → ALGO ================= */
 
 function algo(game, cau) {
-  if (game === "SUNWIN") return algoSUNWIN_TTOAN(cau);
+  if (game === "SUNWIN") return algoSUNWIN(cau);
   if (game.startsWith("LC79")) return algoLC79(cau);
   if (game.startsWith("HITCLUB")) return algoHIT(cau);
-  if (game.startsWith("SICBO_HITCLUB")) return algoHIT(cau);
   if (game.startsWith("B52")) return algoB52(cau);
   if (game.startsWith("BETVIP")) return algoBET(cau);
   if (game.startsWith("789")) return algo789(cau);
-  if (game.startsWith("68GB")) return algoB52(cau);
   if (game.startsWith("LUCKY")) return algoLUCKY(cau);
   return ["Tài", "50%"];
 }
 
-/* ================= SICBO VỊ – KHÔNG RANDOM ================= */
-
-function tinhViSicbo(tong, du_doan) {
-  const TAI = [11, 12, 13, 14, 15, 16, 17];
-  const XIU = [4, 5, 6, 7, 8, 9, 10];
-  const pool = du_doan === "Tài" ? TAI : XIU;
-  const base = tong % pool.length;
-  return [
-    pool[base],
-    pool[(base + 2) % pool.length],
-    pool[(base + 4) % pool.length]
-  ];
-}
-
-/* ================= BACKGROUND UPDATE ================= */
+/* ================= UPDATE DATA ================= */
 
 async function updateAllGames() {
   const store = load(DATA_FILE);
@@ -161,6 +138,7 @@ async function updateAllGames() {
   for (const game in GAMES) {
     try {
       const api = (await axios.get(GAMES[game], { timeout: 8000 })).data;
+
       const phien =
         api.phien_hien_tai ??
         api.current_round ??
@@ -174,27 +152,21 @@ async function updateAllGames() {
       const ket_qua = tong >= 11 ? "Tài" : "Xỉu";
 
       if (!store[game]) {
-        store[game] = {
-          game,
-          phien_hien_tai: phien,
-          phien_cuoi: phien - 1,
-          tong,
-          ket_qua,
-          cap_nhat_luc: now()
-        };
+        store[game] = { phien_hien_tai: phien };
         cauStore[game] = "";
-        continue;
       }
 
       if (phien > store[game].phien_hien_tai) {
         cauStore[game] += ket_qua[0];
-        store[game].phien_cuoi = phien - 1;
       }
 
-      store[game].phien_hien_tai = phien;
-      store[game].tong = tong;
-      store[game].ket_qua = ket_qua;
-      store[game].cap_nhat_luc = now();
+      store[game] = {
+        game,
+        phien_hien_tai: phien,
+        tong,
+        ket_qua,
+        cap_nhat_luc: now()
+      };
     } catch {}
   }
 
@@ -221,20 +193,14 @@ app.get("/api/dudoan/:game", (req, res) => {
 
   const [du_doan, do_tin_cay] = algo(game, cau);
 
-  let dudoan_vi;
-  if (game === "SICBO_SUN" || game === "SICBO_HITCLUB") {
-    dudoan_vi = tinhViSicbo(api.tong, du_doan);
-  }
-
   res.json({
     ID: "Bi Nhoi Vip Pro",
     Game: game,
-    phien: api.phien_cuoi,
+    phien_hien_tai: api.phien_hien_tai,
     tong: api.tong,
     ket_qua: api.ket_qua,
-    phien_hien_tai: api.phien_hien_tai,
+    cau,
     du_doan,
-    ...(dudoan_vi ? { dudoan_vi } : {}),
     do_tin_cay
   });
 });
