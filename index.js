@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 const DATA_FILE = "./data.json";
 const CAU_FILE = "./cau_all_game.json";
 
-/* ========= GAME LIST ========= */
+/* ================= GAME LIST ================= */
 const GAMES = {
   LC79_THUONG: "https://lc79md5-lun8.onrender.com/lc79/tx",
   LC79_MD5: "https://lc79md5-lun8.onrender.com/lc79/md5",
@@ -34,12 +34,92 @@ const GAMES = {
   LUCKYWIN_MD5: "https://luckywingugu.onrender.com/luck/md5"
 };
 
-/* ========= UTIL ========= */
+/* ================= UTIL ================= */
 const load = (f) => (fs.existsSync(f) ? JSON.parse(fs.readFileSync(f)) : {});
 const save = (f, d) => fs.writeFileSync(f, JSON.stringify(d, null, 2));
 const now = () => new Date().toLocaleString("vi-VN");
 
-/* ========= AUTO UPDATE ========= */
+/* ================= THUẬT TOÁN RIÊNG ================= */
+
+// LC79
+function algoLC79(cau) {
+  if (cau.endsWith("TTT")) return ["Xỉu", 70];
+  if (cau.endsWith("XXX")) return ["Tài", 70];
+  return ["Tài", 55];
+}
+
+// HITCLUB
+function algoHIT(cau) {
+  const t = (cau.match(/T/g) || []).length;
+  const x = (cau.match(/X/g) || []).length;
+  return t > x ? ["Xỉu", 60] : ["Tài", 60];
+}
+
+// SUNWIN
+function algoSUN(cau) {
+  if (cau.endsWith("TXTX")) return ["Xỉu", 65];
+  if (cau.endsWith("XTXT")) return ["Tài", 65];
+  return ["Tài", 55];
+}
+
+// B52
+function algoB52(cau) {
+  if (cau.endsWith("TT")) return ["Xỉu", 60];
+  if (cau.endsWith("XX")) return ["Tài", 60];
+  return ["Tài", 50];
+}
+
+// BETVIP
+function algoBET(cau) {
+  if (!cau) return ["Tài", 50];
+  return cau.slice(-1) === "T" ? ["Tài", 55] : ["Xỉu", 55];
+}
+
+// 789
+function algo789(cau) {
+  if (cau.endsWith("TTX")) return ["Xỉu", 65];
+  if (cau.endsWith("XXT")) return ["Tài", 65];
+  return ["Tài", 50];
+}
+
+// LUCKY
+function algoLUCKY(cau) {
+  if (cau.endsWith("TTTT")) return ["Xỉu", 75];
+  if (cau.endsWith("XXXX")) return ["Tài", 75];
+  return ["Tài", 55];
+}
+
+// MAP GAME → ALGO
+function algo(game, cau) {
+  if (game.startsWith("LC79")) return algoLC79(cau);
+  if (game.startsWith("HITCLUB")) return algoHIT(cau);
+  if (game.startsWith("SICBO_HITCLUB")) return algoHIT(cau);
+  if (game.startsWith("SUN") || game.startsWith("SICBO_SUN")) return algoSUN(cau);
+  if (game.startsWith("B52")) return algoB52(cau);
+  if (game.startsWith("BETVIP")) return algoBET(cau);
+  if (game.startsWith("789")) return algo789(cau);
+  if (game.startsWith("68GB")) return algoB52(cau);
+  if (game.startsWith("LUCKY")) return algoLUCKY(cau);
+  return ["Tài", 50];
+}
+
+/* ================= SICBO VỊ ================= */
+function tinhViSicbo(tong_truoc, du_doan) {
+  if (!tong_truoc || !du_doan) return null;
+
+  let tong_muc_tieu =
+    du_doan === "Xỉu"
+      ? 21 - tong_truoc
+      : tong_truoc + 1;
+
+  if (tong_muc_tieu <= 6) return [1, 2, 3];
+  if (tong_muc_tieu <= 9) return [2, 3, 4];
+  if (tong_muc_tieu <= 11) return [3, 4];
+  if (tong_muc_tieu <= 14) return [3, 4, 5];
+  return [4, 5, 6];
+}
+
+/* ================= BACKGROUND UPDATE ================= */
 async function updateAllGames() {
   const store = load(DATA_FILE);
   const cauStore = load(CAU_FILE);
@@ -48,7 +128,7 @@ async function updateAllGames() {
     try {
       const api = (await axios.get(GAMES[game], { timeout: 8000 })).data;
 
-      const phien =
+      const phien_hien_tai =
         api.phien_hien_tai ??
         api.current_round ??
         api.round_current ??
@@ -56,7 +136,7 @@ async function updateAllGames() {
         null;
 
       const tong = api.tong ?? api.total ?? null;
-      if (phien === null || tong === null) continue;
+      if (!phien_hien_tai || tong === null) continue;
 
       const ket_qua = tong >= 11 ? "Tài" : "Xỉu";
 
@@ -64,8 +144,8 @@ async function updateAllGames() {
         store[game] = {
           id: "Bi Nhoi Vip Pro",
           game,
-          phien_hien_tai: phien,
-          phien_cuoi: phien - 1,
+          phien_hien_tai,
+          phien_cuoi: phien_hien_tai - 1,
           ket_qua,
           tong,
           cap_nhat_luc: now()
@@ -74,12 +154,12 @@ async function updateAllGames() {
         continue;
       }
 
-      if (phien > store[game].phien_hien_tai) {
-        cauStore[game] += ket_qua[0]; // lưu T / X
-        store[game].phien_cuoi = phien - 1;
+      if (phien_hien_tai > store[game].phien_hien_tai) {
+        cauStore[game] += ket_qua[0]; // T / X
+        store[game].phien_cuoi = phien_hien_tai - 1;
       }
 
-      store[game].phien_hien_tai = phien;
+      store[game].phien_hien_tai = phien_hien_tai;
       store[game].ket_qua = ket_qua;
       store[game].tong = tong;
       store[game].cap_nhat_luc = now();
@@ -93,77 +173,7 @@ async function updateAllGames() {
 
 setInterval(updateAllGames, 2500);
 
-/* ========= THUẬT TOÁN RIÊNG TỪNG GAME ========= */
-function algo(game, cau) {
-  switch (game) {
-
-    case "LC79_THUONG":
-      if (cau.endsWith("TTT")) return { du_doan: "Xỉu", do_tin_cay: 72 };
-      if (cau.endsWith("XXX")) return { du_doan: "Tài", do_tin_cay: 72 };
-      break;
-
-    case "LC79_MD5":
-      if (cau.endsWith("TX")) return { du_doan: "Tài", do_tin_cay: 63 };
-      if (cau.endsWith("XT")) return { du_doan: "Xỉu", do_tin_cay: 63 };
-      break;
-
-    case "SUNWIN":
-      if (cau.endsWith("TXTX")) return { du_doan: "Tài", do_tin_cay: 70 };
-      break;
-
-    case "SICBO_SUN":
-      if (cau.endsWith("XX")) return { du_doan: "Tài", do_tin_cay: 66 };
-      break;
-
-    case "789CLUB":
-      if (cau.endsWith("TTX")) return { du_doan: "Xỉu", do_tin_cay: 69 };
-      break;
-
-    case "HITCLUB_THUONG":
-      if (cau.endsWith("XXX")) return { du_doan: "Tài", do_tin_cay: 74 };
-      break;
-
-    case "HITCLUB_MD5":
-      if (cau.endsWith("TT")) return { du_doan: "Xỉu", do_tin_cay: 65 };
-      break;
-
-    case "SICBO_HITCLUB":
-      if (cau.endsWith("TXT")) return { du_doan: "Tài", do_tin_cay: 67 };
-      break;
-
-    case "B52_THUONG":
-      if (cau.endsWith("TT")) return { du_doan: "Xỉu", do_tin_cay: 68 };
-      break;
-
-    case "B52_MD5":
-      if (cau.endsWith("XX")) return { du_doan: "Tài", do_tin_cay: 68 };
-      break;
-
-    case "BETVIP_THUONG":
-      if (cau.endsWith("T")) return { du_doan: "Tài", do_tin_cay: 60 };
-      break;
-
-    case "BETVIP_MD5":
-      if (cau.endsWith("X")) return { du_doan: "Xỉu", do_tin_cay: 60 };
-      break;
-
-    case "68GB_MD5":
-      if (cau.endsWith("TTTT")) return { du_doan: "Xỉu", do_tin_cay: 76 };
-      break;
-
-    case "LUCKYWIN_TX":
-      if (cau.endsWith("XXXX")) return { du_doan: "Tài", do_tin_cay: 78 };
-      break;
-
-    case "LUCKYWIN_MD5":
-      if (cau.endsWith("TTTT")) return { du_doan: "Xỉu", do_tin_cay: 78 };
-      break;
-  }
-
-  return { du_doan: "Tài", do_tin_cay: 50 };
-}
-
-/* ========= API ========= */
+/* ================= API ================= */
 app.get("/api/all", (req, res) => res.json(load(DATA_FILE)));
 app.get("/api/cau", (req, res) => res.json(load(CAU_FILE)));
 
@@ -177,12 +187,19 @@ app.get("/api/dudoan/:game", async (req, res) => {
   const tong = api.tong ?? api.total ?? null;
   const ket_qua = tong >= 11 ? "Tài" : "Xỉu";
 
+  const [du_doan, do_tin_cay] = algo(game, cau);
+
+  let dudoan_vi = null;
+  if (game.includes("SICBO")) {
+    dudoan_vi = tinhViSicbo(tong, du_doan);
+  }
+
   const xuc_xac =
     api.xuc_xac_1 && api.xuc_xac_2 && api.xuc_xac_3
       ? [api.xuc_xac_1, api.xuc_xac_2, api.xuc_xac_3]
+      : Array.isArray(api.xuc_xac)
+      ? api.xuc_xac
       : null;
-
-  const { du_doan, do_tin_cay } = algo(game, cau);
 
   res.json({
     ID: "Bi Nhoi Vip Pro",
@@ -193,7 +210,8 @@ app.get("/api/dudoan/:game", async (req, res) => {
     ket_qua,
     phien_hien_tai: api.phien_hien_tai ?? null,
     du_doan,
-    do_tin_cay
+    do_tin_cay,
+    dudoan_vi
   });
 });
 
