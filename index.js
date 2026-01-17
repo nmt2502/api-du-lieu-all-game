@@ -27,7 +27,12 @@ const GAMES = {
   BETVIP_MD5: "https://betvip.onrender.com/betvip/md5",
 
   LUCKYWIN_TX: "https://luckywingugu.onrender.com/luck8/tx",
-  LUCKYWIN_MD5: "https://luckywingugu.onrender.com/luck/md5"
+  LUCKYWIN_MD5: "https://luckywingugu.onrender.com/luck/md5",
+
+  /* ===== ADD ===== */
+  "68GB_MD5": "https://six8-api-5pje.onrender.com/68gbmd5",
+  SICBO_HITCLUB: "https://sichit-d15h.onrender.com/sicbo",
+  SICBO_SUN: "https://sicsun-9wes.onrender.com/predict"
 };
 
 /* ================= UTIL ================= */
@@ -36,7 +41,7 @@ const load = (f) =>
 const save = (f, d) => fs.writeFileSync(f, JSON.stringify(d, null, 2));
 const now = () => new Date().toLocaleString("vi-VN");
 
-/* ================= SUNWIN THUẬT TOÁN ================= */
+/* ================= THUẬT TOÁN 68GB ================= */
 
 const SUNWIN_PATTERNS = {
   "1-1":   { pattern: ["T","X","T","X"], probability: 0.7,  strength: 0.8 },
@@ -64,29 +69,24 @@ const SUNWIN_PATTERNS = {
   "1-2-1-3-4": { pattern: ["T","X","X","T","X","X","X","T","T","T","T",], probability: 0.89, strength: 0.99 }
 };
 
+
 function algoSUNWIN(cau) {
-  if (!cau || cau.length < 4) {
-    return ["Chờ 5-7 Tay", "0%"];
-  }
+  if (!cau || cau.length < 4) return ["Chờ 5-7 Tay", "0%"];
 
   let best = null;
   let bestLen = 0;
 
-  for (const key in SUNWIN_PATTERNS) {
-    const pat = SUNWIN_PATTERNS[key].pattern.join("");
+  for (const k in SUNWIN_PATTERNS) {
+    const pat = SUNWIN_PATTERNS[k].pattern.join("");
     if (cau.includes(pat) && pat.length > bestLen) {
-      best = SUNWIN_PATTERNS[key];
+      best = SUNWIN_PATTERNS[k];
       bestLen = pat.length;
     }
   }
 
-  if (!best) {
-    return ["Chờ Lấy Dữ Liệu Đưa Ra Dự Đoán", "0%"];
-  }
+  if (!best) return ["Chờ Lấy Dữ Liệu Đưa Ra Dự Đoán", "0%"];
 
-  const last = cau.slice(-1);
-  const du_doan = last === "T" ? "Xỉu" : "Tài";
-
+  const du_doan = cau.slice(-1) === "T" ? "Xỉu" : "Tài";
   const percent = Math.round(best.probability * best.strength * 100);
 
   return [du_doan, percent + "%"];
@@ -135,7 +135,9 @@ function algo(game, cau) {
   if (game === "SUNWIN") return algoSUNWIN(cau);
   if (game.startsWith("LC79")) return algoLC79(cau);
   if (game.startsWith("HITCLUB")) return algoHIT(cau);
+  if (game.startsWith("SICBO")) return algoHIT(cau);
   if (game.startsWith("B52")) return algoB52(cau);
+  if (game.startsWith("68GB")) return algoB52(cau);
   if (game.startsWith("BETVIP")) return algoBET(cau);
   if (game.startsWith("789")) return algo789(cau);
   if (game.startsWith("LUCKY")) return algoLUCKY(cau);
