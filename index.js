@@ -39,17 +39,16 @@ const load = (f) => (fs.existsSync(f) ? JSON.parse(fs.readFileSync(f)) : {});
 const save = (f, d) => fs.writeFileSync(f, JSON.stringify(d, null, 2));
 const now = () => new Date().toLocaleString("vi-VN");
 
-/* ========= AUTO UPDATE (BACKGROUND) ========= */
+/* ========= AUTO UPDATE ========= */
 async function updateAllGames() {
   const store = load(DATA_FILE);
   const cauStore = load(CAU_FILE);
 
   for (const game in GAMES) {
     try {
-      const res = await axios.get(GAMES[game], { timeout: 8000 });
-      const api = res.data;
+      const api = (await axios.get(GAMES[game], { timeout: 8000 })).data;
 
-      const phien_hien_tai =
+      const phien =
         api.phien_hien_tai ??
         api.current_round ??
         api.round_current ??
@@ -57,7 +56,7 @@ async function updateAllGames() {
         null;
 
       const tong = api.tong ?? api.total ?? null;
-      if (phien_hien_tai === null || tong === null) continue;
+      if (phien === null || tong === null) continue;
 
       const ket_qua = tong >= 11 ? "Tài" : "Xỉu";
 
@@ -65,8 +64,8 @@ async function updateAllGames() {
         store[game] = {
           id: "Bi Nhoi Vip Pro",
           game,
-          phien_hien_tai,
-          phien_cuoi: phien_hien_tai - 1,
+          phien_hien_tai: phien,
+          phien_cuoi: phien - 1,
           ket_qua,
           tong,
           cap_nhat_luc: now()
@@ -75,86 +74,127 @@ async function updateAllGames() {
         continue;
       }
 
-      // QUA PHIÊN → CỘNG CẦU
-      if (phien_hien_tai > store[game].phien_hien_tai) {
-        cauStore[game] += ket_qua[0]; // T hoặc X (chỉ lưu cầu)
-        store[game].phien_cuoi = phien_hien_tai - 1;
+      if (phien > store[game].phien_hien_tai) {
+        cauStore[game] += ket_qua[0]; // lưu T / X
+        store[game].phien_cuoi = phien - 1;
       }
 
-      store[game].phien_hien_tai = phien_hien_tai;
+      store[game].phien_hien_tai = phien;
       store[game].ket_qua = ket_qua;
       store[game].tong = tong;
       store[game].cap_nhat_luc = now();
 
-    } catch (e) {
-      continue;
-    }
+    } catch {}
   }
 
   save(DATA_FILE, store);
   save(CAU_FILE, cauStore);
 }
 
-/* ========= AUTO CHẠY 2.5s ========= */
 setInterval(updateAllGames, 2500);
 
+/* ========= THUẬT TOÁN RIÊNG TỪNG GAME ========= */
+function algo(game, cau) {
+  switch (game) {
+
+    case "LC79_THUONG":
+      if (cau.endsWith("TTT")) return { du_doan: "Xỉu", do_tin_cay: 72 };
+      if (cau.endsWith("XXX")) return { du_doan: "Tài", do_tin_cay: 72 };
+      break;
+
+    case "LC79_MD5":
+      if (cau.endsWith("TX")) return { du_doan: "Tài", do_tin_cay: 63 };
+      if (cau.endsWith("XT")) return { du_doan: "Xỉu", do_tin_cay: 63 };
+      break;
+
+    case "SUNWIN":
+      if (cau.endsWith("TXTX")) return { du_doan: "Tài", do_tin_cay: 70 };
+      break;
+
+    case "SICBO_SUN":
+      if (cau.endsWith("XX")) return { du_doan: "Tài", do_tin_cay: 66 };
+      break;
+
+    case "789CLUB":
+      if (cau.endsWith("TTX")) return { du_doan: "Xỉu", do_tin_cay: 69 };
+      break;
+
+    case "HITCLUB_THUONG":
+      if (cau.endsWith("XXX")) return { du_doan: "Tài", do_tin_cay: 74 };
+      break;
+
+    case "HITCLUB_MD5":
+      if (cau.endsWith("TT")) return { du_doan: "Xỉu", do_tin_cay: 65 };
+      break;
+
+    case "SICBO_HITCLUB":
+      if (cau.endsWith("TXT")) return { du_doan: "Tài", do_tin_cay: 67 };
+      break;
+
+    case "B52_THUONG":
+      if (cau.endsWith("TT")) return { du_doan: "Xỉu", do_tin_cay: 68 };
+      break;
+
+    case "B52_MD5":
+      if (cau.endsWith("XX")) return { du_doan: "Tài", do_tin_cay: 68 };
+      break;
+
+    case "BETVIP_THUONG":
+      if (cau.endsWith("T")) return { du_doan: "Tài", do_tin_cay: 60 };
+      break;
+
+    case "BETVIP_MD5":
+      if (cau.endsWith("X")) return { du_doan: "Xỉu", do_tin_cay: 60 };
+      break;
+
+    case "68GB_MD5":
+      if (cau.endsWith("TTTT")) return { du_doan: "Xỉu", do_tin_cay: 76 };
+      break;
+
+    case "LUCKYWIN_TX":
+      if (cau.endsWith("XXXX")) return { du_doan: "Tài", do_tin_cay: 78 };
+      break;
+
+    case "LUCKYWIN_MD5":
+      if (cau.endsWith("TTTT")) return { du_doan: "Xỉu", do_tin_cay: 78 };
+      break;
+  }
+
+  return { du_doan: "Tài", do_tin_cay: 50 };
+}
+
 /* ========= API ========= */
+app.get("/api/all", (req, res) => res.json(load(DATA_FILE)));
+app.get("/api/cau", (req, res) => res.json(load(CAU_FILE)));
 
-// ALL GAME
-app.get("/api/all", (req, res) => {
-  res.json(load(DATA_FILE));
-});
-
-// CAU RIÊNG
-app.get("/api/cau", (req, res) => {
-  res.json(load(CAU_FILE));
-});
-
-// DỰ ĐOÁN THEO GAME
 app.get("/api/dudoan/:game", async (req, res) => {
   const game = req.params.game.toUpperCase();
   if (!GAMES[game]) return res.json({ error: "Game không tồn tại" });
 
-  try {
-    const api = (await axios.get(GAMES[game])).data;
-    const cau = load(CAU_FILE)[game] || "";
+  const api = (await axios.get(GAMES[game])).data;
+  const cau = load(CAU_FILE)[game] || "";
 
-    const tong = api.tong ?? api.total ?? null;
-    const ket_qua = tong >= 11 ? "Tài" : "Xỉu";
+  const tong = api.tong ?? api.total ?? null;
+  const ket_qua = tong >= 11 ? "Tài" : "Xỉu";
 
-    const xuc_xac =
-      api.xuc_xac_1 && api.xuc_xac_2 && api.xuc_xac_3
-        ? [api.xuc_xac_1, api.xuc_xac_2, api.xuc_xac_3]
-        : Array.isArray(api.xuc_xac)
-        ? api.xuc_xac
-        : null;
+  const xuc_xac =
+    api.xuc_xac_1 && api.xuc_xac_2 && api.xuc_xac_3
+      ? [api.xuc_xac_1, api.xuc_xac_2, api.xuc_xac_3]
+      : null;
 
-    // DỰ ĐOÁN ĐƠN GIẢN THEO CẦU
-    let du_doan = "Tài";
-    let do_tin_cay = 50;
+  const { du_doan, do_tin_cay } = algo(game, cau);
 
-    if (cau.endsWith("TT")) {
-      du_doan = "Xỉu";
-      do_tin_cay = 65;
-    } else if (cau.endsWith("XX")) {
-      du_doan = "Tài";
-      do_tin_cay = 65;
-    }
-
-    res.json({
-      ID: "Bi Nhoi Vip Pro",
-      Game: game,
-      phien: api.phien ?? api.round ?? null,
-      xuc_xac,
-      tong,
-      ket_qua,
-      phien_hien_tai: api.phien_hien_tai ?? null,
-      du_doan,
-      do_tin_cay
-    });
-  } catch {
-    res.json({ error: "Không lấy được API gốc" });
-  }
+  res.json({
+    ID: "Bi Nhoi Vip Pro",
+    Game: game,
+    phien: api.phien ?? null,
+    xuc_xac,
+    tong,
+    ket_qua,
+    phien_hien_tai: api.phien_hien_tai ?? null,
+    du_doan,
+    do_tin_cay
+  });
 });
 
 app.listen(PORT, () =>
