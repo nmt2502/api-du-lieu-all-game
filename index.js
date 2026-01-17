@@ -28,7 +28,11 @@ const GAMES = {
   BETVIP_THUONG: "https://betvip.onrender.com/betvip/tx",
   BETVIP_MD5: "https://betvip.onrender.com/betvip/md5",
 
-  "68GB_MD5": "https://six8-api-5pje.onrender.com/68gbmd5"
+  "68GB_MD5": "https://six8-api-5pje.onrender.com/68gbmd5",
+
+  /* ===== THÊM Ở ĐÂY ===== */
+  LUCKYWIN_TX: "https://luckywingugu.onrender.com/luck8/tx",
+  LUCKYWIN_MD5: "https://luckywingugu.onrender.com/luck/md5"
 };
 
 /* ========= UTIL ========= */
