@@ -43,6 +43,25 @@ function now() {
   return new Date().toLocaleString("vi-VN");
 }
 
+/* ========= DỰ ĐOÁN ========= */
+function duDoanTuCau(cau = "") {
+  if (cau.length < 3) {
+    return { du_doan: Math.random() > 0.5 ? "T" : "X", do_tin_cay: "50%" };
+  }
+
+  const last3 = cau.slice(-3);
+  const tCount = [...last3].filter(c => c === "T").length;
+  const xCount = 3 - tCount;
+
+  if (tCount === 3) return { du_doan: "T", do_tin_cay: "80%" };
+  if (xCount === 3) return { du_doan: "X", do_tin_cay: "80%" };
+
+  if (tCount > xCount) return { du_doan: "T", do_tin_cay: "65%" };
+  if (xCount > tCount) return { du_doan: "X", do_tin_cay: "65%" };
+
+  return { du_doan: last3[2] === "T" ? "X" : "T", do_tin_cay: "55%" };
+}
+
 /* ========= CORE UPDATE ========= */
 async function updateAllGames() {
   const store = loadJSON(DATA_FILE, {});
@@ -60,16 +79,11 @@ async function updateAllGames() {
         api.phien ??
         null;
 
-      const tong =
-        api.tong ??
-        api.total ??
-        null;
-
+      const tong = api.tong ?? api.total ?? null;
       if (phien_hien_tai === null || tong === null) continue;
 
       const ket_qua = tong >= 11 ? "T" : "X";
 
-      /* INIT GAME */
       if (!store[game]) {
         store[game] = {
           id: "Bi Nhoi Vip Pro",
@@ -84,10 +98,9 @@ async function updateAllGames() {
         continue;
       }
 
-      /* ===== QUA PHIÊN THẬT → CỘNG CẦU ===== */
       if (phien_hien_tai > store[game].phien_hien_tai) {
-        cauStore[game] = (cauStore[game] || "") + ket_qua;
-        store[game].phien_cuoi = phien_hien_tai - 1;
+        cauStore[game] += store[game].ket_qua;
+        store[game].phien_cuoi = store[game].phien_hien_tai;
       }
 
       store[game].phien_hien_tai = phien_hien_tai;
@@ -95,8 +108,7 @@ async function updateAllGames() {
       store[game].tong = tong;
       store[game].cap_nhat_luc = now();
 
-    } catch (err) {
-      // API lỗi → KHÔNG update, KHÔNG cộng cầu
+    } catch {
       continue;
     }
   }
@@ -105,7 +117,7 @@ async function updateAllGames() {
   saveJSON(CAU_FILE, cauStore);
 }
 
-/* ========= AUTO BACKGROUND ========= */
+/* ========= AUTO ========= */
 setInterval(updateAllGames, 2500);
 
 /* ========= API ========= */
@@ -115,6 +127,30 @@ app.get("/api/all", (req, res) => {
 
 app.get("/api/cau", (req, res) => {
   res.json(loadJSON(CAU_FILE, {}));
+});
+
+app.get("/api/dudoan/:game", (req, res) => {
+  const game = req.params.game;
+  const data = loadJSON(DATA_FILE, {});
+  const cau = loadJSON(CAU_FILE, {});
+
+  if (!data[game]) {
+    return res.status(404).json({ error: "Game không tồn tại" });
+  }
+
+  const predict = duDoanTuCau(cau[game] || "");
+
+  res.json({
+    id: data[game].id,
+    game,
+    phien: data[game].phien_cuoi,
+    xuc_xac: null,
+    tong: data[game].tong,
+    ket_qua: data[game].ket_qua,
+    phien_hien_tai: data[game].phien_hien_tai,
+    du_doan: predict.du_doan,
+    do_tin_cay: predict.do_tin_cay
+  });
 });
 
 app.listen(PORT, () =>
