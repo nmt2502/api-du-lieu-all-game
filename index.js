@@ -66,7 +66,7 @@ const SUNWIN_PATTERNS = {
 
 function algoSUNWIN(cau) {
   if (!cau || cau.length < 4) {
-    return ["Chờ Lấy Dữ Liệu Đưa Ra Dự Đoán", "0%"];
+    return ["Chờ 5-7 Tay", "0%"];
   }
 
   let best = null;
