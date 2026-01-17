@@ -104,12 +104,21 @@ function algo(game, cau) {
 }
 
 /* ================= SICBO VỊ (CHỈ 2 GAME) ================= */
-function tinhViSicboTheoTaiXiu(du_doan) {
+function tinhViSicboTheoCongThuc(tong_truoc, du_doan) {
+  if (!tong_truoc || !du_doan) return [];
+
   const TAI = [11, 12, 13, 14, 15, 16, 17];
   const XIU = [4, 5, 6, 7, 8, 9, 10];
 
   const pool = du_doan === "Tài" ? TAI : XIU;
-  return pool.sort(() => 0.5 - Math.random()).slice(0, 3);
+
+  const index = tong_truoc % pool.length;
+
+  return [
+    pool[index % pool.length],
+    pool[(index + 2) % pool.length],
+    pool[(index + 4) % pool.length]
+  ];
 }
 
 /* ================= BACKGROUND UPDATE ================= */
