@@ -4,7 +4,9 @@ const axios = require("axios");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
 const DATA_FILE = "./data.json";
+const CAU_FILE = "./cau_all_game.json";
 
 /* ========= GAME LIST ========= */
 const GAMES = {
@@ -30,12 +32,12 @@ const GAMES = {
 };
 
 /* ========= UTIL ========= */
-function loadData() {
-  if (!fs.existsSync(DATA_FILE)) return {};
-  return JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
+function loadJSON(file, def = {}) {
+  if (!fs.existsSync(file)) return def;
+  return JSON.parse(fs.readFileSync(file, "utf8"));
 }
-function saveData(data) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+function saveJSON(file, data) {
+  fs.writeFileSync(file, JSON.stringify(data, null, 2));
 }
 function now() {
   return new Date().toLocaleString("vi-VN");
@@ -43,7 +45,8 @@ function now() {
 
 /* ========= CORE UPDATE ========= */
 async function updateAllGames() {
-  const store = loadData();
+  const store = loadJSON(DATA_FILE, {});
+  const cauAll = loadJSON(CAU_FILE, {});
 
   for (const game in GAMES) {
     try {
@@ -64,7 +67,7 @@ async function updateAllGames() {
 
       if (phien_hien_tai === null || tong === null) continue;
 
-      const ket_qua = tong >= 11 ? "T" : "X";
+      const ket_qua_moi = tong >= 11 ? "T" : "X";
 
       /* INIT */
       if (!store[game]) {
@@ -73,32 +76,37 @@ async function updateAllGames() {
           game,
           phien_hien_tai,
           phien_cuoi: phien_hien_tai - 1,
-          ket_qua,
+          ket_qua: ket_qua_moi,
           tong,
-          cau: "",
           cap_nhat_luc: now()
         };
+        if (!cauAll[game]) cauAll[game] = "";
         continue;
       }
 
-      /* ===== CHỈ KHI QUA PHIÊN ===== */
-      if (phien_hien_tai > store[game].phien_hien_tai) {
-        store[game].cau += ket_qua; // T / X
-        store[game].phien_cuoi = phien_hien_tai - 1;
+      const phien_cu = store[game].phien_hien_tai;
+      const ket_qua_cu = store[game].ket_qua;
+
+      /* ===== QUA PHIÊN THẬT ===== */
+      if (phien_hien_tai > phien_cu) {
+        cauAll[game] = (cauAll[game] || "") + ket_qua_cu;
+        store[game].phien_cuoi = phien_cu;
       }
 
+      /* UPDATE LIVE */
       store[game].phien_hien_tai = phien_hien_tai;
-      store[game].ket_qua = ket_qua;
+      store[game].ket_qua = ket_qua_moi;
       store[game].tong = tong;
       store[game].cap_nhat_luc = now();
 
     } catch (e) {
-      // API lỗi → bỏ qua, KHÔNG cộng cầu
+      // API lỗi → bỏ qua hoàn toàn
       continue;
     }
   }
 
-  saveData(store);
+  saveJSON(DATA_FILE, store);
+  saveJSON(CAU_FILE, cauAll);
 }
 
 /* ========= AUTO BACKGROUND ========= */
@@ -106,7 +114,9 @@ setInterval(updateAllGames, 2500);
 
 /* ========= API ========= */
 app.get("/api/all", (req, res) => {
-  res.json(loadData());
+  const data = loadJSON(DATA_FILE, {});
+  const cau = loadJSON(CAU_FILE, {});
+  res.json({ data, cau });
 });
 
 app.listen(PORT, () =>
