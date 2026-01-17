@@ -89,38 +89,12 @@ function algoLUCKY(cau) {
   return ["Tài", 55];
 }
 
-/* ================= SICBO ALGO RIÊNG ================= */
-function algoSICBO(cau, tong) {
-  let du_doan = tong >= 11 ? "Tài" : "Xỉu";
-  let do_tin_cay = 55;
-
-  if (cau.endsWith("TTT")) {
-    du_doan = "Xỉu";
-    do_tin_cay = 70;
-  }
-  if (cau.endsWith("XXX")) {
-    du_doan = "Tài";
-    do_tin_cay = 70;
-  }
-
-  if (tong <= 5) {
-    du_doan = "Tài";
-    do_tin_cay = 65;
-  }
-  if (tong >= 16) {
-    du_doan = "Xỉu";
-    do_tin_cay = 65;
-  }
-
-  return [du_doan, do_tin_cay];
-}
-
-/* ================= MAP GAME → ALGO ================= */
-function algo(game, cau, tong) {
-  if (game.includes("SICBO")) return algoSICBO(cau, tong);
+// MAP GAME → ALGO
+function algo(game, cau) {
   if (game.startsWith("LC79")) return algoLC79(cau);
   if (game.startsWith("HITCLUB")) return algoHIT(cau);
-  if (game.startsWith("SUN")) return algoSUN(cau);
+  if (game.startsWith("SICBO_HITCLUB")) return algoHIT(cau);
+  if (game.startsWith("SUN") || game.startsWith("SICBO_SUN")) return algoSUN(cau);
   if (game.startsWith("B52")) return algoB52(cau);
   if (game.startsWith("BETVIP")) return algoBET(cau);
   if (game.startsWith("789")) return algo789(cau);
@@ -129,24 +103,16 @@ function algo(game, cau, tong) {
   return ["Tài", 50];
 }
 
-/* ================= SICBO VỊ (TỔNG NÊN ĐÁNH) ================= */
-function tinhViSicbo(tong_truoc, du_doan) {
-  if (!tong_truoc || !du_doan) return [];
+/* ================= SICBO VỊ (NEW RULE) ================= */
+function tinhViSicboTheoTaiXiu(du_doan) {
+  const TAI = [11, 12, 13, 14, 15, 16, 17];
+  const XIU = [4, 5, 6, 7, 8, 9, 10];
 
-  let muc_tieu =
-    du_doan === "Xỉu"
-      ? 21 - tong_truoc
-      : tong_truoc + 1;
+  const source = du_doan === "Tài" ? TAI : XIU;
 
-  muc_tieu = Math.max(4, Math.min(17, muc_tieu));
-
-  let vi = [
-    muc_tieu - 2,
-    muc_tieu,
-    muc_tieu + 2
-  ].filter(v => du_doan === "Xỉu" ? v <= 10 : v >= 11);
-
-  return [...new Set(vi)];
+  // random 3 vị không trùng
+  const shuffled = source.sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, 3);
 }
 
 /* ================= BACKGROUND UPDATE ================= */
@@ -185,7 +151,7 @@ async function updateAllGames() {
       }
 
       if (phien_hien_tai > store[game].phien_hien_tai) {
-        cauStore[game] += ket_qua[0];
+        cauStore[game] += ket_qua[0]; // T / X
         store[game].phien_cuoi = phien_hien_tai - 1;
       }
 
@@ -193,7 +159,6 @@ async function updateAllGames() {
       store[game].ket_qua = ket_qua;
       store[game].tong = tong;
       store[game].cap_nhat_luc = now();
-
     } catch {}
   }
 
@@ -217,11 +182,11 @@ app.get("/api/dudoan/:game", async (req, res) => {
   const tong = api.tong ?? api.total ?? null;
   const ket_qua = tong >= 11 ? "Tài" : "Xỉu";
 
-  const [du_doan, do_tin_cay] = algo(game, cau, tong);
+  const [du_doan, do_tin_cay] = algo(game, cau);
 
   let dudoan_vi = null;
   if (game.includes("SICBO")) {
-    dudoan_vi = tinhViSicbo(tong, du_doan);
+    dudoan_vi = tinhViSicboTheoTaiXiu(du_doan);
   }
 
   const xuc_xac =
@@ -240,8 +205,8 @@ app.get("/api/dudoan/:game", async (req, res) => {
     ket_qua,
     phien_hien_tai: api.phien_hien_tai ?? null,
     du_doan,
-    do_tin_cay,
-    dudoan_vi
+    dudoan_vi,
+    do_tin_cay
   });
 });
 
