@@ -1,3 +1,4 @@
+
 const express = require("express");
 const fs = require("fs");
 const axios = require("axios");
@@ -36,7 +37,7 @@ const GAMES = {
 };
 
 /* ================= UTIL ================= */
-const load = (f) => (fs.existsSync(f) ? JSON.parse(fs.readFileSync(f)) : {});
+const load = (f) => (fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : {});
 const save = (f, d) => fs.writeFileSync(f, JSON.stringify(d, null, 2));
 const now = () => new Date().toLocaleString("vi-VN");
 
@@ -56,7 +57,7 @@ function algoHIT(cau) {
   return t > x ? ["Xỉu", 60] : ["Tài", 60];
 }
 
-// SUNWIN (fallback)
+// SUNWIN fallback
 function algoSUN(cau) {
   if (cau.endsWith("TXTX")) return ["Xỉu", 65];
   if (cau.endsWith("XTXT")) return ["Tài", 65];
@@ -92,7 +93,7 @@ function algoLUCKY(cau) {
 
 /* ================= MAP GAME → ALGO ================= */
 function algo(game, cau) {
-  // ✅ SUNWIN ƯU TIÊN FILE TTOAN
+  // ✅ SUNWIN dùng file ttoansun.json
   if (game === "SUNWIN") {
     const key = cau.slice(-8);
     if (TTOAN_SUN[key]) {
@@ -113,13 +114,13 @@ function algo(game, cau) {
   return ["Tài", 50];
 }
 
-/* ================= SICBO VỊ – KHÔNG RANDOM ================= */
-function tinhViSicboTheoCongThuc(tong_truoc, du_doan) {
+/* ================= SICBO VỊ – CỐ ĐỊNH ================= */
+function tinhViSicbo(tong, du_doan) {
   const TAI = [11, 12, 13, 14, 15, 16, 17];
   const XIU = [4, 5, 6, 7, 8, 9, 10];
 
   const pool = du_doan === "Tài" ? TAI : XIU;
-  const base = tong_truoc % pool.length;
+  const base = tong % pool.length;
 
   return [
     pool[base],
@@ -181,6 +182,18 @@ async function updateAllGames() {
 setInterval(updateAllGames, 5500);
 
 /* ================= API ================= */
+
+// 🔹 API ALL
+app.get("/api/all", (req, res) => {
+  res.json(load(DATA_FILE));
+});
+
+// 🔹 API CAU
+app.get("/api/cau", (req, res) => {
+  res.json(load(CAU_FILE));
+});
+
+// 🔹 API DUDOAN
 app.get("/api/dudoan/:game", (req, res) => {
   const game = req.params.game.toUpperCase();
   const store = load(DATA_FILE);
@@ -195,7 +208,7 @@ app.get("/api/dudoan/:game", (req, res) => {
 
   let dudoan_vi;
   if (game === "SICBO_SUN" || game === "SICBO_HITCLUB") {
-    dudoan_vi = tinhViSicboTheoCongThuc(api.tong, du_doan);
+    dudoan_vi = tinhViSicbo(api.tong, du_doan);
   }
 
   res.json({
@@ -212,5 +225,5 @@ app.get("/api/dudoan/:game", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log("Api Chạy Tại Cổng", PORT);
+  console.log("🚀 Server chạy cổng", PORT);
 });
