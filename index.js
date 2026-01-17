@@ -1,3 +1,4 @@
+
 const express = require("express");
 const fs = require("fs");
 const axios = require("axios");
@@ -103,21 +104,22 @@ function algo(game, cau) {
   return ["Tài", 50];
 }
 
-/* ================= SICBO VỊ (CHỈ 2 GAME) ================= */
+/* ================= SICBO VỊ – KHÔNG RANDOM ================= */
 function tinhViSicboTheoCongThuc(tong_truoc, du_doan) {
-  if (!tong_truoc || !du_doan) return [];
+  if (typeof tong_truoc !== "number") return [];
 
   const TAI = [11, 12, 13, 14, 15, 16, 17];
   const XIU = [4, 5, 6, 7, 8, 9, 10];
 
   const pool = du_doan === "Tài" ? TAI : XIU;
 
-  const index = tong_truoc % pool.length;
+  // công thức cố định → reload KHÔNG đổi
+  const base = (tong_truoc * 3 + pool.length) % pool.length;
 
   return [
-    pool[index % pool.length],
-    pool[(index + 2) % pool.length],
-    pool[(index + 4) % pool.length]
+    pool[base % pool.length],
+    pool[(base + 2) % pool.length],
+    pool[(base + 4) % pool.length]
   ];
 }
 
@@ -182,10 +184,13 @@ app.get("/api/dudoan/:game", async (req, res) => {
   const game = req.params.game.toUpperCase();
   if (!GAMES[game]) return res.json({ error: "Game không tồn tại" });
 
-  const api = (await axios.get(GAMES[game])).data;
+  const store = load(DATA_FILE);
+  const api = store[game];
+  if (!api) return res.json({ error: "Chưa có dữ liệu game" });
+
   const cau = load(CAU_FILE)[game] || "";
 
-  const tong = api.tong ?? api.total ?? null;
+  const tong = api.tong;
   const ket_qua = tong >= 11 ? "Tài" : "Xỉu";
 
   const [du_doan, do_tin_cay] = algo(game, cau);
@@ -194,24 +199,17 @@ app.get("/api/dudoan/:game", async (req, res) => {
 
   // ✅ CHỈ SICBO
   if (game === "SICBO_SUN" || game === "SICBO_HITCLUB") {
-    dudoan_vi = tinhViSicboTheoTaiXiu(du_doan);
+    dudoan_vi = tinhViSicboTheoCongThuc(tong, du_doan);
   }
-
-  const xuc_xac =
-    api.xuc_xac_1 && api.xuc_xac_2 && api.xuc_xac_3
-      ? [api.xuc_xac_1, api.xuc_xac_2, api.xuc_xac_3]
-      : Array.isArray(api.xuc_xac)
-      ? api.xuc_xac
-      : null;
 
   res.json({
     ID: "Bi Nhoi Vip Pro",
     Game: game,
-    phien: api.phien ?? null,
-    xuc_xac,
+    phien: api.phien_cuoi ?? null,
+    xuc_xac: api.xuc_xac ?? null,
     tong,
     ket_qua,
-    phien_hien_tai: api.phien_hien_tai ?? null,
+    phien_hien_tai: api.phien_hien_tai,
     du_doan,
     ...(dudoan_vi ? { dudoan_vi } : {}),
     do_tin_cay
