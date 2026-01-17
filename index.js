@@ -87,7 +87,7 @@ const algoSUNWIN = (cau) => runAlgo(cau, SUNWIN_PATTERNS);
 
 /* ================= THUẬT TOÁN LC TX THƯỜNG ================= */
 
-const LC79_THUONG_PATTERNS = {
+const LC_THUONG_PATTERNS = {
   "1-1":   { pattern: ["T","X","T","X"], probability: 0.7,  strength: 0.8 },
   "1-2-1": { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
   "2-1-2": { pattern: ["T","T","X","T","T"], probability: 0.68, strength: 0.78 },
