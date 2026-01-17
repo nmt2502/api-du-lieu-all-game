@@ -46,7 +46,7 @@ function now() {
 /* ========= CORE UPDATE ========= */
 async function updateAllGames() {
   const store = loadJSON(DATA_FILE, {});
-  const cauAll = loadJSON(CAU_FILE, {});
+  const cauStore = loadJSON(CAU_FILE, {});
 
   for (const game in GAMES) {
     try {
@@ -67,46 +67,42 @@ async function updateAllGames() {
 
       if (phien_hien_tai === null || tong === null) continue;
 
-      const ket_qua_moi = tong >= 11 ? "T" : "X";
+      const ket_qua = tong >= 11 ? "T" : "X";
 
-      /* INIT */
+      /* INIT GAME */
       if (!store[game]) {
         store[game] = {
           id: "Bi Nhoi Vip Pro",
           game,
           phien_hien_tai,
           phien_cuoi: phien_hien_tai - 1,
-          ket_qua: ket_qua_moi,
+          ket_qua,
           tong,
           cap_nhat_luc: now()
         };
-        if (!cauAll[game]) cauAll[game] = "";
+        if (!cauStore[game]) cauStore[game] = "";
         continue;
       }
 
-      const phien_cu = store[game].phien_hien_tai;
-      const ket_qua_cu = store[game].ket_qua;
-
-      /* ===== QUA PHIÊN THẬT ===== */
-      if (phien_hien_tai > phien_cu) {
-        cauAll[game] = (cauAll[game] || "") + ket_qua_cu;
-        store[game].phien_cuoi = phien_cu;
+      /* ===== QUA PHIÊN THẬT → CỘNG CẦU ===== */
+      if (phien_hien_tai > store[game].phien_hien_tai) {
+        cauStore[game] = (cauStore[game] || "") + ket_qua;
+        store[game].phien_cuoi = phien_hien_tai - 1;
       }
 
-      /* UPDATE LIVE */
       store[game].phien_hien_tai = phien_hien_tai;
-      store[game].ket_qua = ket_qua_moi;
+      store[game].ket_qua = ket_qua;
       store[game].tong = tong;
       store[game].cap_nhat_luc = now();
 
-    } catch (e) {
-      // API lỗi → bỏ qua hoàn toàn
+    } catch (err) {
+      // API lỗi → KHÔNG update, KHÔNG cộng cầu
       continue;
     }
   }
 
   saveJSON(DATA_FILE, store);
-  saveJSON(CAU_FILE, cauAll);
+  saveJSON(CAU_FILE, cauStore);
 }
 
 /* ========= AUTO BACKGROUND ========= */
@@ -114,9 +110,11 @@ setInterval(updateAllGames, 2500);
 
 /* ========= API ========= */
 app.get("/api/all", (req, res) => {
-  const data = loadJSON(DATA_FILE, {});
-  const cau = loadJSON(CAU_FILE, {});
-  res.json({ data, cau });
+  res.json(loadJSON(DATA_FILE, {}));
+});
+
+app.get("/api/cau", (req, res) => {
+  res.json(loadJSON(CAU_FILE, {}));
 });
 
 app.listen(PORT, () =>
