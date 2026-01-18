@@ -156,21 +156,36 @@ const LC_MD5_PATTERNS = {
 
 const algoLC_MD5 = (cau) => runAlgo(cau, LC_MD5_PATTERNS);
 
-/* =========================================================
-   68GB – RIÊNG
-========================================================= */
-const GB68_PATTERNS = {
-  "dao_chieu": {
-    pattern: ["T","T","T","X","X"],
-    probability: 0.73
-  },
-  "gap_xiu": {
-    pattern: ["X","X","T","X","X"],
-    probability: 0.75
-  }
+/* ================= THUẬT TOÁN 68GB ================= */
+
+const 68GB_MD5_PATTERNS = {
+  "1-1":   { pattern: ["T","X","T","X"], probability: 0.7,  strength: 0.8 },
+  "1-1":   { pattern: ["X","T","X","T"], probability: 0.7,  strength: 0.8 },
+  "1-2-1": { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
+  "1-2-1": { pattern: ["X","T","T","X"], probability: 0.65, strength: 0.75 },
+  "2-1-2": { pattern: ["T","T","X","T","T"], probability: 0.68, strength: 0.78 },
+  "2-1-2": { pattern: ["X","X","T","X","X"], probability: 0.68, strength: 0.78 },
+  "3-1":   { pattern: ["T","T","T","X"], probability: 0.72, strength: 0.82 },
+  "3-1":   { pattern: ["X","X","X","T"], probability: 0.72, strength: 0.82 },
+  "1-3":   { pattern: ["T","X","X","X"], probability: 0.72, strength: 0.82 },
+  "1-3":   { pattern: ["X","T","T","T"], probability: 0.72, strength: 0.82 },
+  "2-2":   { pattern: ["T","T","X","X"], probability: 0.66, strength: 0.76 },
+  "2-2":   { pattern: ["X","X","T","T"], probability: 0.66, strength: 0.76 },
+  "2-3":   { pattern: ["T","T","X","X","X"], probability: 0.71, strength: 0.81 },
+  "2-3":   { pattern: ["X","X","T","T","T"], probability: 0.71, strength: 0.81 },
+  "3-2":   { pattern: ["T","T","T","X","X"], probability: 0.73, strength: 0.83 },
+  "3-2":   { pattern: ["X","X","X","T","T"], probability: 0.73, strength: 0.83 },
+  "4-1":   { pattern: ["T","T","T","T","X"], probability: 0.76, strength: 0.86 },
+  "4-1":   { pattern: ["X","X","X","X","T"], probability: 0.76, strength: 0.86 },
+  "1-4":   { pattern: ["T","X","X","X","X"], probability: 0.76, strength: 0.86 },
+  "1-4":   { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 },
+  "3-1-3":   { pattern: ["T","T","T","X","T","T","T"], probability: 0.72, strength: 0.82 },
+  "3-1-3":   { pattern: ["X","X","X","T","X","X","X"], probability: 0.72, strength: 0.82 },
+  "2-3-2":   { pattern: ["T","T","X","X","X","T","T"], probability: 0.78, strength: 0.88 },
+  "2-3-2":   { pattern: ["X","X","T","T","T","X","X"], probability: 0.78, strength: 0.88 }
 };
 
-const algo68GB = (cau) => runAlgo(cau, GB68_PATTERNS);
+const algo68GB = (cau) => runAlgo(cau, 68GB_MD5_PATTERNS);
 
 /* =========================================================
    SICBO – RIÊNG
