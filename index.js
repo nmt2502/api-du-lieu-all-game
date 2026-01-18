@@ -473,21 +473,6 @@ const ALGO_MAP = {
   LC79_MD5: algoLC_MD5,
   "68GB_MD5": algo68GB,
   "789_THUONG": algo789,
-
-  LUCK_TX: algoLUCK_TX,
-  LUCK_MD5: algoLUCK_MD5,
-
-  BET_THUONG: algoBET_THUONG,
-  BET_MD5: algoBET_MD5,
-
-  HIT_THUONG: algoHIT_THUONG,
-  HIT_MD5: algoHIT_MD5,
-
-  B52_TX: algoB52_TX,
-  B52_MD5: algoB52_MD5,
-
-  SICBO_SUN: algoSICBO,
-  SICBO_HITCLUB: algoSICBO
 };
 
 /* =========================================================
