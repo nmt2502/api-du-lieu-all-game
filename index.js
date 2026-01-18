@@ -207,7 +207,7 @@ const algo68GB = (cau) => runAlgo(cau, GB68_PATTERNS);
 
 /* ================= THUẬT TOÁN 789CLUB ================= */
 
-const 789_PATTERNS = {
+const CL789_PATTERNS = {
   "1-1":   { pattern: ["T","X","T","X"], probability: 0.7,  strength: 0.8 },
   "1-1":   { pattern: ["X","T","X","T"], probability: 0.7,  strength: 0.8 },
   "1-2-1": { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
@@ -230,7 +230,7 @@ const 789_PATTERNS = {
   "1-4":   { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 }
 
   
-const algo789 = (cau) => runAlgo(cau, 789_PATTERNS);
+const algo789 = (cau) => runAlgo(cau, CL789_PATTERNS);
 
 /* ================= THUẬT TOÁN luckywinLUCKYWIN Thường================= */
 
