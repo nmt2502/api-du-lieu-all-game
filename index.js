@@ -172,7 +172,7 @@ const SUNWIN_PATTERNS = {
   ],
 
   "4-1-5-1-1": [
-    { pattern: ["T","T","T","T","X","T","T","T","T","T"."X","T"], probability: 0.87, strength: 0.77 },
+    { pattern: ["T","T","T","T","X","T","T","T","T","T","X","T"], probability: 0.87, strength: 0.77 },
     { pattern: ["X","X","X","X","T","X"."X","X","X","X"."T","X"], probability: 0.87, strength: 0.77 }
   ],
 
