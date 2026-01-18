@@ -18,19 +18,19 @@ const GAMES = {
   /* ================= GAME 68 GAME BÀI ================= */
   "68GB_MD5": "https://six8-api-5pje.onrender.com/68gbmd5",
   /* ================= GAME 789CLUB ================= */
-  "https://seven89-wkxd.onrender.com/api/789/tx",
+  "789_THUONG": "https://seven89-wkxd.onrender.com/api/789/tx",
   /* ================= GAME LUCKYWIN ================= */
-  "https://luckywingugu.onrender.com/luck/md5",
-  "https://luckywingugu.onrender.com/luck8/tx",
+  LUCK_TX: "https://luckywingugu.onrender.com/luck/md5",
+  LUCK_MD5: "https://luckywingugu.onrender.com/luck8/tx",
   /* ================= GAME BETVIP ================= */
-  "https://betvip.onrender.com/betvip/md5",
-  "https://betvip.onrender.com/betvip/tx",
+  BET_THUONG: "https://betvip.onrender.com/betvip/md5",
+  BET_MD5: "https://betvip.onrender.com/betvip/tx",
   /* ================= GAME HITCLUB ================= */
-  "https://hitclub-rksy.onrender.com/api/taixiumd5",
-  "https://hitclub-rksy.onrender.com/api/taixiu",
+  HIT_THUONG: "https://hitclub-rksy.onrender.com/api/taixiumd5",
+  HIT_MD5: "https://hitclub-rksy.onrender.com/api/taixiu",
   /* ================= GAME B52 ================= */
-  "https://b52-si96.onrender.com/api/taixiumd5",
-  "https://b52-si96.onrender.com/api/taixiu",
+  B52_TX: "https://b52-si96.onrender.com/api/taixiumd5",
+  B52_MD5: "https://b52-si96.onrender.com/api/taixiu",
   /* ================= GAME SICBO ================= */
   SICBO_SUN: "https://sicsun-9wes.onrender.com/predict",
   SICBO_HITCLUB: "https://sichit-d15h.onrender.com/sicbo"
@@ -228,6 +228,15 @@ function algo(game, cau) {
     case "LC79_THUONG": return algoLC_THUONG(cau);
     case "LC79_MD5": return algoLC_MD5(cau);
     case "68GB_MD5": return algo68GB(cau);
+    case "789_THUONG": return algo789club(cau);
+    case "LUCK_TX": return algoLUCK_TX(cau);
+    case "LUCK_MD5": return algoLUCK_MD5(cau);
+    case "BET_THUONG": return algoBET_THUONG(cau);
+    case "BET_MD5": return algoBET_MD5(cau);
+    case "HIT_THUONG": return algoHIT_THUONG(cau);
+    case "HIT_MD5": return algoHIT_MD5(cau);
+    case "B52_TX": return algoB52_TX(cau);
+    case "B52_MD5": return algoB52_MD5(cau);
     case "SICBO_SUN":
     case "SICBO_HITCLUB": return algoSICBO(cau);
     default: return ["Tài", "50%"];
