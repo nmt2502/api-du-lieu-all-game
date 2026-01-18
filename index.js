@@ -124,7 +124,7 @@ const LC_THUONG_PATTERNS = {
 
 const algoLC_THUONG = (cau) => runAlgo(cau, LC_THUONG_PATTERNS);
 
-/* ================= THUẬT TOÁN LC TX THƯỜNG ================= */
+/* ================= THUẬT TOÁN LC TX MD5 ================= */
 
 const LC_MD5_PATTERNS = {
   "1-1":   { pattern: ["T","X","T","X"], probability: 0.7,  strength: 0.8 },
@@ -148,9 +148,9 @@ const LC_MD5_PATTERNS = {
   "1-4":   { pattern: ["T","X","X","X","X"], probability: 0.76, strength: 0.86 },
   "1-4":   { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 },
   "6-1-1-6": { pattern: ["T","T","T","T","T","T","X","T","X","X","X","X","X","X","X"], probability: 0.92, strength: 0.94 },
-  "6-1-1-6": { pattern: ["X","X","X","X","X","X","T","X","T","T","T","T","T","T","T"], probability: 0.92, strength: 0.94 }
-  "1-1-2-1": { pattern: ["T","X","T","T","X"], probability: 0.92, strength: 0.94 },
-  "1-1-2-1": { pattern: ["X","T","X","X","T"], probability: 0.92, strength: 0.94 },
+  "6-1-1-6": { pattern: ["X","X","X","X","X","X","T","X","T","T","T","T","T","T","T"], probability: 0.92, strength: 0.94 },
+  "1-1-2-1": { pattern: ["T","X","T","T","X"], probability: 0.92, strength: 0.98 },
+  "1-1-2-1": { pattern: ["X","T","X","X","T"], probability: 0.92, strength: 0.98 },
   "1-1-2-1-1-2-1": { pattern: ["T","X","T","X","X","T","X","T","T","X"], probability: 0.94, strength: 0.96 }
 };
 
