@@ -230,7 +230,7 @@ const 789_PATTERNS = {
   "1-4":   { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 }
 
   
-const algo789club = (cau) => runAlgo(cau, 789_PATTERNS);
+const algo789 = (cau) => runAlgo(cau, 789_PATTERNS);
 
 /* ================= THUẬT TOÁN luckywinLUCKYWIN Thường================= */
 
