@@ -125,6 +125,11 @@ const SUNWIN_PATTERNS = {
     { pattern: ["X","X","X","X","T"], probability: 0.76, strength: 0.86 }
   ],
 
+  "4-1-4": [
+    { pattern: ["T","T","T","T","X","T","T","T","T"], probability: 0.56, strength: 0.66 },
+    { pattern: ["X","X","X","X","T","X","X","X","X"], probability: 0.76, strength: 0.66 }
+  ],
+
   "1-4": [
     { pattern: ["T","X","X","X","X"], probability: 0.76, strength: 0.86 },
     { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 }
@@ -164,6 +169,11 @@ const SUNWIN_PATTERNS = {
   "1-3-3": [
     { pattern: ["T","X","X","X","T","T","T"], probability: 0.87, strength: 0.77 },
     { pattern: ["X","T","T","T","X","X","X"], probability: 0.87, strength: 0.77 }
+  ],
+
+  "4-1-5-1-1": [
+    { pattern: ["T","T","T","T","X","T","T","T","T","T"."X","T"], probability: 0.87, strength: 0.77 },
+    { pattern: ["X","X","X","X","T","X"."X","X","X","X"."T","X"], probability: 0.87, strength: 0.77 }
   ],
 
   "1-2-1-3-4": [
