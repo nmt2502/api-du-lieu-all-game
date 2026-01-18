@@ -429,13 +429,23 @@ const CL789_PATTERNS = {
 
 const algo789 = (cau) => runAlgo(cau, CL789_PATTERNS);
 
-/* ================= THUẬT TOÁN luckywinLUCKYWIN Thường================= */
+/* ================= THUẬT TOÁN LUCKYWIN THƯỜNG================= */
 
 /* ================= THUẬT TOÁN LUCKYWIN MD5================= */
 
-/* =========================================================
-   SICBO – RIÊNG
-========================================================= */
+/* ================= THUẬT TOÁN BETVIP THƯỜNG================= */
+
+/* ================= THUẬT TOÁN BETVIP MD5================= */
+
+/* ================= THUẬT TOÁN HITCLUB THƯỜNG================= */
+
+/* ================= THUẬT TOÁN HITCLUB MD5================= */
+
+/* ================= THUẬT TOÁN B52 THƯỜNG================= */
+
+/* ================= THUẬT TOÁN B52 MD5================= */
+
+/* ================= THUẬT TOÁN SICBO HITCLUB================= */
 function algoSICBO(cau) {
   const t = (cau.match(/T/g) || []).length;
   const x = (cau.match(/X/g) || []).length;
@@ -446,6 +456,9 @@ function algoSICBO(cau) {
 
   return t > x ? ["Xỉu", "65%"] : ["Tài", "65%"];
 }
+
+
+/* ================= THUẬT TOÁN SICBO SUN================= */
 
 /* =========================================================
    MAP GAME → ALGO
