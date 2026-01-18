@@ -151,8 +151,7 @@ const LC_MD5_PATTERNS = {
   "6-1-1-6": { pattern: ["X","X","X","X","X","X","T","X","T","T","T","T","T","T","T"], probability: 0.92, strength: 0.94 }
   "1-1-2-1": { pattern: ["T","X","T","T","X"], probability: 0.92, strength: 0.94 },
   "1-1-2-1": { pattern: ["X","T","X","X","T"], probability: 0.92, strength: 0.94 },
-  "1-1-2-1-1-2-1": { pattern: ["T","X","T","X","X","T","X","T","T","X"], probability: 0.94, strength: 0.96 },
-  
+  "1-1-2-1-1-2-1": { pattern: ["T","X","T","X","X","T","X","T","T","X"], probability: 0.94, strength: 0.96 }
 };
 
 const algoLC_MD5 = (cau) => runAlgo(cau, LC_MD5_PATTERNS);
