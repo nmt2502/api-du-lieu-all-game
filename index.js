@@ -463,26 +463,28 @@ function algoSICBO(cau) {
 /* =========================================================
    MAP GAME → ALGO
 ========================================================= */
-function algo(game, cau) {
-  switch (game) {
-    case "SUNWIN": return algoSUNWIN(cau);
-    case "LC79_THUONG": return algoLC_THUONG(cau);
-    case "LC79_MD5": return algoLC_MD5(cau);
-    case "68GB_MD5": return algo68GB(cau);
-    case "789_THUONG": return algo789(cau);
-    case "LUCK_TX": return algoLUCK_TX(cau);
-    case "LUCK_MD5": return algoLUCK_MD5(cau);
-    case "BET_THUONG": return algoBET_THUONG(cau);
-    case "BET_MD5": return algoBET_MD5(cau);
-    case "HIT_THUONG": return algoHIT_THUONG(cau);
-    case "HIT_MD5": return algoHIT_MD5(cau);
-    case "B52_TX": return algoB52_TX(cau);
-    case "B52_MD5": return algoB52_MD5(cau);
-    case "SICBO_SUN":
-    case "SICBO_HITCLUB": return algoSICBO(cau);
-    default: return ["Tài", "50%"];
-  }
-}
+const ALGO_MAP = {
+  SUNWIN: algoSUNWIN,
+  LC79_THUONG: algoLC_THUONG,
+  LC79_MD5: algoLC_MD5,
+  "68GB_MD5": algo68GB,
+  "789_THUONG": algo789,
+
+  LUCK_TX: algoLUCK_TX,
+  LUCK_MD5: algoLUCK_MD5,
+
+  BET_THUONG: algoBET_THUONG,
+  BET_MD5: algoBET_MD5,
+
+  HIT_THUONG: algoHIT_THUONG,
+  HIT_MD5: algoHIT_MD5,
+
+  B52_TX: algoB52_TX,
+  B52_MD5: algoB52_MD5,
+
+  SICBO_SUN: algoSICBO,
+  SICBO_HITCLUB: algoSICBO
+};
 
 /* =========================================================
    UPDATE DATA
