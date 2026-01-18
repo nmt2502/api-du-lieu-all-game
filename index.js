@@ -46,20 +46,23 @@ const now = () => new Date().toLocaleString("vi-VN");
    CORE ENGINE – SO KHỚP CHUỖI CON
 ========================================================= */
 function runAlgo(cau, PATTERNS) {
-  if (!cau || cau.length < 4) {
+  if (!Array.isArray(cau) || cau.length < 4) {
     return ["Chờ Đủ Dữ Liệu", "0%"];
   }
 
   let best = null;
   let bestLen = 0;
 
-  for (const key in PATTERNS) {
-    const { pattern, probability } = PATTERNS[key];
-    const str = pattern.join("");
+  const cauStr = cau.join("");
 
-    if (cau.includes(str) && str.length > bestLen) {
-      best = PATTERNS[key];
-      bestLen = str.length;
+  for (const key in PATTERNS) {
+    for (const item of PATTERNS[key]) {
+      const str = item.pattern.join("");
+
+      if (cauStr.includes(str) && str.length > bestLen) {
+        best = item;
+        bestLen = str.length;
+      }
     }
   }
 
@@ -67,7 +70,8 @@ function runAlgo(cau, PATTERNS) {
     return ["Chờ Đủ Dữ Liệu", "0%"];
   }
 
-  const du_doan = cau.slice(-1) === "T" ? "Xỉu" : "Tài";
+  const last = cau[cau.length - 1];
+  const du_doan = last === "T" ? "Xỉu" : "Tài";
   const percent = Math.min(95, Math.round(best.probability * 100));
 
   return [du_doan, percent + "%"];
