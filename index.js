@@ -207,7 +207,7 @@ const algo68GB = (cau) => runAlgo(cau, GB68_PATTERNS);
 
 /* ================= THUẬT TOÁN 789CLUB ================= */
 
-const 789club_PATTERNS = {
+const 789_PATTERNS = {
   "1-1":   { pattern: ["T","X","T","X"], probability: 0.7,  strength: 0.8 },
   "1-1":   { pattern: ["X","T","X","T"], probability: 0.7,  strength: 0.8 },
   "1-2-1": { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
@@ -230,7 +230,7 @@ const 789club_PATTERNS = {
   "1-4":   { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 }
 
   
-const algo789club = (cau) => runAlgo(cau, 789club_PATTERNS);
+const algo789club = (cau) => runAlgo(cau, 789_PATTERNS);
 
 /* ================= THUẬT TOÁN luckywinLUCKYWIN Thường================= */
 
@@ -259,7 +259,7 @@ function algo(game, cau) {
     case "LC79_THUONG": return algoLC_THUONG(cau);
     case "LC79_MD5": return algoLC_MD5(cau);
     case "68GB_MD5": return algo68GB(cau);
-    case "789_THUONG": return algo789club(cau);
+    case "789_THUONG": return algo789(cau);
     case "LUCK_TX": return algoLUCK_TX(cau);
     case "LUCK_MD5": return algoLUCK_MD5(cau);
     case "BET_THUONG": return algoBET_THUONG(cau);
