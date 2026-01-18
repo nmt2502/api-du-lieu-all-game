@@ -64,7 +64,7 @@ function runAlgo(cau, PATTERNS) {
   }
 
   if (!best) {
-    return ["Chờ Lấy Dữ Liệu Đưa Ra Dự Đoán", "0%"];
+    return ["Chờ Đủ Dữ Liệu", "0%"];
   }
 
   const du_doan = cau.slice(-1) === "T" ? "Xỉu" : "Tài";
@@ -451,7 +451,7 @@ function algoSICBO(cau) {
   const x = (cau.match(/X/g) || []).length;
 
   if (Math.abs(t - x) < 2) {
-    return ["Chờ Lấy Dữ Liệu Đưa Ra Dự Đoán", "0%"];
+    return ["Chờ Đủ Dữ Liệu", "0%"];
   }
 
   return t > x ? ["Xỉu", "65%"] : ["Tài", "65%"];
@@ -530,7 +530,7 @@ async function updateAllGames() {
   save(CAU_FILE, cauStore);
 }
 
-setInterval(updateAllGames, 5500);
+setInterval(updateAllGames, 6500);
 
 /* =========================================================
    API
