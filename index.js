@@ -460,17 +460,37 @@ const algo789 = (cau) => runAlgo(cau, CL789_PATTERNS);
 /* ================= THUẬT TOÁN B52 MD5================= */
 
 /* ================= THUẬT TOÁN SICBO HITCLUB================= */
-function algoSICBO(cau) {
+function algoSICBO(cauArr) {
+  if (!Array.isArray(cauArr) || cauArr.length < 5) {
+    return {
+      du_doan: "CHO",
+      dudoan_vi: "Chờ",
+      do_tin_cay: "0%"
+    };
+  }
+
+  const cau = cauArr.join("");
   const t = (cau.match(/T/g) || []).length;
   const x = (cau.match(/X/g) || []).length;
 
-  if (Math.abs(t - x) < 2) {
-    return ["Chờ Đủ Dữ Liệu", "0%"];
+  let du_doan;
+
+  if (Math.abs(t - x) >= 2) {
+    du_doan = t > x ? "XIU" : "TAI";
+  } else {
+    return {
+      du_doan: "CHO",
+      dudoan_vi: "Chờ",
+      do_tin_cay: "0%"
+    };
   }
 
-  return t > x ? ["Xỉu", "65%"] : ["Tài", "65%"];
+  return {
+    du_doan,
+    dudoan_vi: du_doan === "TAI" ? "Tài" : "Xỉu",
+    do_tin_cay: "65%"
+  };
 }
-
 
 /* ================= THUẬT TOÁN SICBO SUN================= */
 
@@ -483,6 +503,8 @@ const ALGO_MAP = {
   LC79_MD5: algoLC_MD5,
   "68GB_MD5": algo68GB,
   "789_THUONG": algo789,
+  SICBO_SUN: algoSICBO,
+  SICBO_HITCLUB: algoSICBO
 };
 
 /* =========================================================
@@ -551,14 +573,32 @@ app.get("/api/dudoan/:game", (req, res) => {
     return res.json({ error: "Game chưa hỗ trợ thuật toán" });
   }
 
-  const [du_doan, do_tin_cay] = algoFunc(cau.split(""));
+  const result = algoFunc(cau.split(""));
+  const isSicbo =
+    game === "SICBO_SUN" || game === "SICBO_HITCLUB";
 
-  res.json({
+  /* ===== FORMAT SICBO ===== */
+  if (isSicbo) {
+    return res.json({
+      ID: "Bi Nhoi Vip Pro",
+      Game: game,
+      phien_hien_tai: api.phien_hien_tai,
+      tong: api.tong,
+      cau,
+      du_doan: result.du_doan,
+      dudoan_vi: result.dudoan_vi,
+      do_tin_cay: result.do_tin_cay
+    });
+  }
+
+  /* ===== FORMAT GAME KHÁC ===== */
+  const [du_doan, do_tin_cay] = result;
+
+  return res.json({
     ID: "Bi Nhoi Vip Pro",
     Game: game,
     phien_hien_tai: api.phien_hien_tai,
     tong: api.tong,
-    ket_qua: api.ket_qua,
     cau,
     du_doan,
     do_tin_cay
