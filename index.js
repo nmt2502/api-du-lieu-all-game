@@ -29,7 +29,7 @@ const now = () => new Date().toLocaleString("vi-VN");
 ========================================================= */
 function runAlgo(cau, PATTERNS) {
   if (!cau || cau.length < 4) {
-    return ["Chờ Lấy Dữ Liệu Đưa Ra Dự Đoán", "0%"];
+    return ["Chờ Đủ Dữ Liệu", "0%"];
   }
 
   let best = null;
@@ -158,7 +158,7 @@ const algoLC_MD5 = (cau) => runAlgo(cau, LC_MD5_PATTERNS);
 
 /* ================= THUẬT TOÁN 68GB ================= */
 
-const 68GB_MD5_PATTERNS = {
+const GB68_PATTERNS = {
   "1-1":   { pattern: ["T","X","T","X"], probability: 0.7,  strength: 0.8 },
   "1-1":   { pattern: ["X","T","X","T"], probability: 0.7,  strength: 0.8 },
   "1-2-1": { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
@@ -185,7 +185,7 @@ const 68GB_MD5_PATTERNS = {
   "2-3-2":   { pattern: ["X","X","T","T","T","X","X"], probability: 0.78, strength: 0.88 }
 };
 
-const algo68GB = (cau) => runAlgo(cau, 68GB_MD5_PATTERNS);
+const algo68GB = (cau) => runAlgo(cau, GB68_PATTERNS);
 
 /* =========================================================
    SICBO – RIÊNG
