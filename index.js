@@ -76,39 +76,95 @@ function runAlgo(cau, PATTERNS) {
 /* ================= THUẬT TOÁN SUNWIN ================= */
 
 const SUNWIN_PATTERNS = {
-  "1-1":   { pattern: ["T","X","T","X"], probability: 0.7,  strength: 0.8 },
-  "1-1":   { pattern: ["X","T","X","T"], probability: 0.7,  strength: 0.8 },
-  "1-2-1": { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
-  "1-2-1": { pattern: ["X","T","T","X"], probability: 0.65, strength: 0.75 },
-  "2-1-2": { pattern: ["T","T","X","T","T"], probability: 0.68, strength: 0.78 },
-  "2-1-2": { pattern: ["X","X","T","X","X"], probability: 0.68, strength: 0.78 },
-  "3-1":   { pattern: ["T","T","T","X"], probability: 0.72, strength: 0.82 },
-  "3-1":   { pattern: ["X","X","X","T"], probability: 0.72, strength: 0.82 },
-  "1-3":   { pattern: ["T","X","X","X"], probability: 0.72, strength: 0.82 },
-  "1-3":   { pattern: ["X","T","T","T"], probability: 0.72, strength: 0.82 },
-  "2-2":   { pattern: ["T","T","X","X"], probability: 0.66, strength: 0.76 },
-  "2-2":   { pattern: ["X","X","T","T"], probability: 0.66, strength: 0.76 },
-  "2-3":   { pattern: ["T","T","X","X","X"], probability: 0.71, strength: 0.81 },
-  "2-3":   { pattern: ["X","X","T","T","T"], probability: 0.71, strength: 0.81 },
-  "3-2":   { pattern: ["T","T","T","X","X"], probability: 0.73, strength: 0.83 },
-  "3-2":   { pattern: ["X","X","X","T","T"], probability: 0.73, strength: 0.83 },
-  "4-1":   { pattern: ["T","T","T","T","X"], probability: 0.76, strength: 0.86 },
-  "4-1":   { pattern: ["X","X","X","X","T"], probability: 0.76, strength: 0.86 },
-  "1-4":   { pattern: ["T","X","X","X","X"], probability: 0.76, strength: 0.86 },
-  "1-4":   { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 },
-  "4":     { pattern: ["T","T","T","T,"], probability: 0.77, strength: 0.87 },
-  "4":     { pattern: ["X","X","X","X",], probability: 0.77, strength: 0.87 },
-  "4-5":   { pattern: ["T","T","T","T","X","X","X","X","X",], probability: 0.79, strength: 0.89 },
-  "5-4":   { pattern: ["X","X","X","X","X","T","T","T","T",], probability: 0.79, strength: 0.89 },
-  "6-6":   { pattern: ["T","T","T","T","T","T","X","X","X","X","X","X",], probability: 0.81, strength: 0.91 },
-  "7-3":   { pattern: ["X","X","X","X","X","X","X","T","T","T",], probability: 0.82, strength: 0.92 },
-  "7-3":   { pattern: ["T","T","T","T","T","T","T","X","X","X",], probability: 0.82, strength: 0.92 },
-  "3-7":   { pattern: ["X","X","X","T","T","T","T","T","T","T",], probability: 0.84, strength: 0.94 },
-  "1-2-3-3": { pattern: ["T","X","X","T","T","T","X","X","X",], probability: 0.77, strength: 0.97 },
-  "1-2-3-3": { pattern: ["X","T","T","X","X","X","T","T","T",], probability: 0.77, strength: 0.97 },
-  "1-3-3":   { pattern: ["T","X","X","X","T","T","T",], probability: 0.87, strength: 0.77 },
-  "1-3-3":   { pattern: ["X","T","T","T","X","X","X",], probability: 0.87, strength: 0.77 },
-  "1-2-1-3-4": { pattern: ["T","X","X","T","X","X","X","T","T","T","T",], probability: 0.89, strength: 0.99 }
+  "1-1": [
+    { pattern: ["T","X","T","X"], probability: 0.7, strength: 0.8 },
+    { pattern: ["X","T","X","T"], probability: 0.7, strength: 0.8 }
+  ],
+
+  "1-2-1": [
+    { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
+    { pattern: ["X","T","T","X"], probability: 0.65, strength: 0.75 }
+  ],
+
+  "2-1-2": [
+    { pattern: ["T","T","X","T","T"], probability: 0.68, strength: 0.78 },
+    { pattern: ["X","X","T","X","X"], probability: 0.68, strength: 0.78 }
+  ],
+
+  "3-1": [
+    { pattern: ["T","T","T","X"], probability: 0.72, strength: 0.82 },
+    { pattern: ["X","X","X","T"], probability: 0.72, strength: 0.82 }
+  ],
+
+  "1-3": [
+    { pattern: ["T","X","X","X"], probability: 0.72, strength: 0.82 },
+    { pattern: ["X","T","T","T"], probability: 0.72, strength: 0.82 }
+  ],
+
+  "2-2": [
+    { pattern: ["T","T","X","X"], probability: 0.66, strength: 0.76 },
+    { pattern: ["X","X","T","T"], probability: 0.66, strength: 0.76 }
+  ],
+
+  "2-3": [
+    { pattern: ["T","T","X","X","X"], probability: 0.71, strength: 0.81 },
+    { pattern: ["X","X","T","T","T"], probability: 0.71, strength: 0.81 }
+  ],
+
+  "3-2": [
+    { pattern: ["T","T","T","X","X"], probability: 0.73, strength: 0.83 },
+    { pattern: ["X","X","X","T","T"], probability: 0.73, strength: 0.83 }
+  ],
+
+  "4-1": [
+    { pattern: ["T","T","T","T","X"], probability: 0.76, strength: 0.86 },
+    { pattern: ["X","X","X","X","T"], probability: 0.76, strength: 0.86 }
+  ],
+
+  "1-4": [
+    { pattern: ["T","X","X","X","X"], probability: 0.76, strength: 0.86 },
+    { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 }
+  ],
+
+  "4": [
+    { pattern: ["T","T","T","T"], probability: 0.77, strength: 0.87 },
+    { pattern: ["X","X","X","X"], probability: 0.77, strength: 0.87 }
+  ],
+
+  "4-5": [
+    { pattern: ["T","T","T","T","X","X","X","X","X"], probability: 0.79, strength: 0.89 }
+  ],
+
+  "5-4": [
+    { pattern: ["X","X","X","X","X","T","T","T","T"], probability: 0.79, strength: 0.89 }
+  ],
+
+  "6-6": [
+    { pattern: ["T","T","T","T","T","T","X","X","X","X","X","X"], probability: 0.81, strength: 0.91 }
+  ],
+
+  "7-3": [
+    { pattern: ["X","X","X","X","X","X","X","T","T","T"], probability: 0.82, strength: 0.92 },
+    { pattern: ["T","T","T","T","T","T","T","X","X","X"], probability: 0.82, strength: 0.92 }
+  ],
+
+  "3-7": [
+    { pattern: ["X","X","X","T","T","T","T","T","T","T"], probability: 0.84, strength: 0.94 }
+  ],
+
+  "1-2-3-3": [
+    { pattern: ["T","X","X","T","T","T","X","X","X"], probability: 0.77, strength: 0.97 },
+    { pattern: ["X","T","T","X","X","X","T","T","T"], probability: 0.77, strength: 0.97 }
+  ],
+
+  "1-3-3": [
+    { pattern: ["T","X","X","X","T","T","T"], probability: 0.87, strength: 0.77 },
+    { pattern: ["X","T","T","T","X","X","X"], probability: 0.87, strength: 0.77 }
+  ],
+
+  "1-2-1-3-4": [
+    { pattern: ["T","X","X","T","X","X","X","T","T","T","T"], probability: 0.89, strength: 0.99 }
+  ]
 };
 
 const algoSUNWIN = (cau) => runAlgo(cau, SUNWIN_PATTERNS);
@@ -116,28 +172,68 @@ const algoSUNWIN = (cau) => runAlgo(cau, SUNWIN_PATTERNS);
 /* ================= THUẬT TOÁN LC TX THƯỜNG ================= */
 
 const LC_THUONG_PATTERNS = {
-  "1-1":   { pattern: ["T","X","T","X"], probability: 0.7,  strength: 0.8 },
-  "1-1":   { pattern: ["X","T","X","T"], probability: 0.7,  strength: 0.8 },
-  "1-2-1": { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
-  "1-2-1": { pattern: ["X","T","T","X"], probability: 0.65, strength: 0.75 },
-  "2-1-2": { pattern: ["T","T","X","T","T"], probability: 0.68, strength: 0.78 },
-  "2-1-2": { pattern: ["X","X","T","X","X"], probability: 0.68, strength: 0.78 },
-  "3-1":   { pattern: ["T","T","T","X"], probability: 0.72, strength: 0.82 },
-  "3-1":   { pattern: ["X","X","X","T"], probability: 0.72, strength: 0.82 },
-  "1-3":   { pattern: ["T","X","X","X"], probability: 0.72, strength: 0.82 },
-  "1-3":   { pattern: ["X","T","T","T"], probability: 0.72, strength: 0.82 },
-  "2-2":   { pattern: ["T","T","X","X"], probability: 0.66, strength: 0.76 },
-  "2-2":   { pattern: ["X","X","T","T"], probability: 0.66, strength: 0.76 },
-  "2-3":   { pattern: ["T","T","X","X","X"], probability: 0.71, strength: 0.81 },
-  "2-3":   { pattern: ["X","X","T","T","T"], probability: 0.71, strength: 0.81 },
-  "3-2":   { pattern: ["T","T","T","X","X"], probability: 0.73, strength: 0.83 },
-  "3-2":   { pattern: ["X","X","X","T","T"], probability: 0.73, strength: 0.83 },
-  "4-1":   { pattern: ["T","T","T","T","X"], probability: 0.76, strength: 0.86 },
-  "4-1":   { pattern: ["X","X","X","X","T"], probability: 0.76, strength: 0.86 },
-  "1-4":   { pattern: ["T","X","X","X","X"], probability: 0.76, strength: 0.86 },
-  "1-4":   { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 },
-  "6-1-1-6": { pattern: ["T","T","T","T","T","T","X","T","X","X","X","X","X","X","X"], probability: 0.92, strength: 0.94 },
-  "6-1-1-6": { pattern: ["X","X","X","X","X","X","T","X","T","T","T","T","T","T","T"], probability: 0.92, strength: 0.94 }
+  "1-1": [
+    { pattern: ["T","X","T","X"], probability: 0.7, strength: 0.8 },
+    { pattern: ["X","T","X","T"], probability: 0.7, strength: 0.8 }
+  ],
+
+  "1-2-1": [
+    { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
+    { pattern: ["X","T","T","X"], probability: 0.65, strength: 0.75 }
+  ],
+
+  "2-1-2": [
+    { pattern: ["T","T","X","T","T"], probability: 0.68, strength: 0.78 },
+    { pattern: ["X","X","T","X","X"], probability: 0.68, strength: 0.78 }
+  ],
+
+  "3-1": [
+    { pattern: ["T","T","T","X"], probability: 0.72, strength: 0.82 },
+    { pattern: ["X","X","X","T"], probability: 0.72, strength: 0.82 }
+  ],
+
+  "1-3": [
+    { pattern: ["T","X","X","X"], probability: 0.72, strength: 0.82 },
+    { pattern: ["X","T","T","T"], probability: 0.72, strength: 0.82 }
+  ],
+
+  "2-2": [
+    { pattern: ["T","T","X","X"], probability: 0.66, strength: 0.76 },
+    { pattern: ["X","X","T","T"], probability: 0.66, strength: 0.76 }
+  ],
+
+  "2-3": [
+    { pattern: ["T","T","X","X","X"], probability: 0.71, strength: 0.81 },
+    { pattern: ["X","X","T","T","T"], probability: 0.71, strength: 0.81 }
+  ],
+
+  "3-2": [
+    { pattern: ["T","T","T","X","X"], probability: 0.73, strength: 0.83 },
+    { pattern: ["X","X","X","T","T"], probability: 0.73, strength: 0.83 }
+  ],
+
+  "4-1": [
+    { pattern: ["T","T","T","T","X"], probability: 0.76, strength: 0.86 },
+    { pattern: ["X","X","X","X","T"], probability: 0.76, strength: 0.86 }
+  ],
+
+  "1-4": [
+    { pattern: ["T","X","X","X","X"], probability: 0.76, strength: 0.86 },
+    { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 }
+  ],
+
+  "6-1-1-6": [
+    {
+      pattern: ["T","T","T","T","T","T","X","T","X","X","X","X","X","X","X"],
+      probability: 0.92,
+      strength: 0.94
+    },
+    {
+      pattern: ["X","X","X","X","X","X","T","X","T","T","T","T","T","T","T"],
+      probability: 0.92,
+      strength: 0.94
+    }
+  ]
 };
 
 const algoLC_THUONG = (cau) => runAlgo(cau, LC_THUONG_PATTERNS);
@@ -145,31 +241,77 @@ const algoLC_THUONG = (cau) => runAlgo(cau, LC_THUONG_PATTERNS);
 /* ================= THUẬT TOÁN LC TX MD5 ================= */
 
 const LC_MD5_PATTERNS = {
-  "1-1":   { pattern: ["T","X","T","X"], probability: 0.7,  strength: 0.8 },
-  "1-1":   { pattern: ["X","T","X","T"], probability: 0.7,  strength: 0.8 },
-  "1-2-1": { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
-  "1-2-1": { pattern: ["X","T","T","X"], probability: 0.65, strength: 0.75 },
-  "2-1-2": { pattern: ["T","T","X","T","T"], probability: 0.68, strength: 0.78 },
-  "2-1-2": { pattern: ["X","X","T","X","X"], probability: 0.68, strength: 0.78 },
-  "3-1":   { pattern: ["T","T","T","X"], probability: 0.72, strength: 0.82 },
-  "3-1":   { pattern: ["X","X","X","T"], probability: 0.72, strength: 0.82 },
-  "1-3":   { pattern: ["T","X","X","X"], probability: 0.72, strength: 0.82 },
-  "1-3":   { pattern: ["X","T","T","T"], probability: 0.72, strength: 0.82 },
-  "2-2":   { pattern: ["T","T","X","X"], probability: 0.66, strength: 0.76 },
-  "2-2":   { pattern: ["X","X","T","T"], probability: 0.66, strength: 0.76 },
-  "2-3":   { pattern: ["T","T","X","X","X"], probability: 0.71, strength: 0.81 },
-  "2-3":   { pattern: ["X","X","T","T","T"], probability: 0.71, strength: 0.81 },
-  "3-2":   { pattern: ["T","T","T","X","X"], probability: 0.73, strength: 0.83 },
-  "3-2":   { pattern: ["X","X","X","T","T"], probability: 0.73, strength: 0.83 },
-  "4-1":   { pattern: ["T","T","T","T","X"], probability: 0.76, strength: 0.86 },
-  "4-1":   { pattern: ["X","X","X","X","T"], probability: 0.76, strength: 0.86 },
-  "1-4":   { pattern: ["T","X","X","X","X"], probability: 0.76, strength: 0.86 },
-  "1-4":   { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 },
-  "6-1-1-6": { pattern: ["T","T","T","T","T","T","X","T","X","X","X","X","X","X","X"], probability: 0.92, strength: 0.94 },
-  "6-1-1-6": { pattern: ["X","X","X","X","X","X","T","X","T","T","T","T","T","T","T"], probability: 0.92, strength: 0.94 },
-  "1-1-2-1": { pattern: ["T","X","T","T","X"], probability: 0.92, strength: 0.98 },
-  "1-1-2-1": { pattern: ["X","T","X","X","T"], probability: 0.92, strength: 0.98 },
-  "1-1-2-1-1-2-1": { pattern: ["T","X","T","X","X","T","X","T","T","X"], probability: 0.94, strength: 0.96 }
+  "1-1": [
+    { pattern: ["T","X","T","X"], probability: 0.7, strength: 0.8 },
+    { pattern: ["X","T","X","T"], probability: 0.7, strength: 0.8 }
+  ],
+
+  "1-2-1": [
+    { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
+    { pattern: ["X","T","T","X"], probability: 0.65, strength: 0.75 }
+  ],
+
+  "2-1-2": [
+    { pattern: ["T","T","X","T","T"], probability: 0.68, strength: 0.78 },
+    { pattern: ["X","X","T","X","X"], probability: 0.68, strength: 0.78 }
+  ],
+
+  "3-1": [
+    { pattern: ["T","T","T","X"], probability: 0.72, strength: 0.82 },
+    { pattern: ["X","X","X","T"], probability: 0.72, strength: 0.82 }
+  ],
+
+  "1-3": [
+    { pattern: ["T","X","X","X"], probability: 0.72, strength: 0.82 },
+    { pattern: ["X","T","T","T"], probability: 0.72, strength: 0.82 }
+  ],
+
+  "2-2": [
+    { pattern: ["T","T","X","X"], probability: 0.66, strength: 0.76 },
+    { pattern: ["X","X","T","T"], probability: 0.66, strength: 0.76 }
+  ],
+
+  "2-3": [
+    { pattern: ["T","T","X","X","X"], probability: 0.71, strength: 0.81 },
+    { pattern: ["X","X","T","T","T"], probability: 0.71, strength: 0.81 }
+  ],
+
+  "3-2": [
+    { pattern: ["T","T","T","X","X"], probability: 0.73, strength: 0.83 },
+    { pattern: ["X","X","X","T","T"], probability: 0.73, strength: 0.83 }
+  ],
+
+  "4-1": [
+    { pattern: ["T","T","T","T","X"], probability: 0.76, strength: 0.86 },
+    { pattern: ["X","X","X","X","T"], probability: 0.76, strength: 0.86 }
+  ],
+
+  "1-4": [
+    { pattern: ["T","X","X","X","X"], probability: 0.76, strength: 0.86 },
+    { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 }
+  ],
+
+  "6-1-1-6": [
+    {
+      pattern: ["T","T","T","T","T","T","X","T","X","X","X","X","X","X","X"],
+      probability: 0.92,
+      strength: 0.94
+    },
+    {
+      pattern: ["X","X","X","X","X","X","T","X","T","T","T","T","T","T","T"],
+      probability: 0.92,
+      strength: 0.94
+    }
+  ],
+
+  "1-1-2-1": [
+    { pattern: ["T","X","T","T","X"], probability: 0.92, strength: 0.98 },
+    { pattern: ["X","T","X","X","T"], probability: 0.92, strength: 0.98 }
+  ],
+
+  "1-1-2-1-1-2-1": [
+    { pattern: ["T","X","T","X","X","T","X","T","T","X"], probability: 0.94, strength: 0.96 }
+  ]
 };
 
 const algoLC_MD5 = (cau) => runAlgo(cau, LC_MD5_PATTERNS);
@@ -177,30 +319,65 @@ const algoLC_MD5 = (cau) => runAlgo(cau, LC_MD5_PATTERNS);
 /* ================= THUẬT TOÁN 68GB ================= */
 
 const GB68_PATTERNS = {
-  "1-1":   { pattern: ["T","X","T","X"], probability: 0.7,  strength: 0.8 },
-  "1-1":   { pattern: ["X","T","X","T"], probability: 0.7,  strength: 0.8 },
-  "1-2-1": { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
-  "1-2-1": { pattern: ["X","T","T","X"], probability: 0.65, strength: 0.75 },
-  "2-1-2": { pattern: ["T","T","X","T","T"], probability: 0.68, strength: 0.78 },
-  "2-1-2": { pattern: ["X","X","T","X","X"], probability: 0.68, strength: 0.78 },
-  "3-1":   { pattern: ["T","T","T","X"], probability: 0.72, strength: 0.82 },
-  "3-1":   { pattern: ["X","X","X","T"], probability: 0.72, strength: 0.82 },
-  "1-3":   { pattern: ["T","X","X","X"], probability: 0.72, strength: 0.82 },
-  "1-3":   { pattern: ["X","T","T","T"], probability: 0.72, strength: 0.82 },
-  "2-2":   { pattern: ["T","T","X","X"], probability: 0.66, strength: 0.76 },
-  "2-2":   { pattern: ["X","X","T","T"], probability: 0.66, strength: 0.76 },
-  "2-3":   { pattern: ["T","T","X","X","X"], probability: 0.71, strength: 0.81 },
-  "2-3":   { pattern: ["X","X","T","T","T"], probability: 0.71, strength: 0.81 },
-  "3-2":   { pattern: ["T","T","T","X","X"], probability: 0.73, strength: 0.83 },
-  "3-2":   { pattern: ["X","X","X","T","T"], probability: 0.73, strength: 0.83 },
-  "4-1":   { pattern: ["T","T","T","T","X"], probability: 0.76, strength: 0.86 },
-  "4-1":   { pattern: ["X","X","X","X","T"], probability: 0.76, strength: 0.86 },
-  "1-4":   { pattern: ["T","X","X","X","X"], probability: 0.76, strength: 0.86 },
-  "1-4":   { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 },
-  "3-1-3":   { pattern: ["T","T","T","X","T","T","T"], probability: 0.72, strength: 0.82 },
-  "3-1-3":   { pattern: ["X","X","X","T","X","X","X"], probability: 0.72, strength: 0.82 },
-  "2-3-2":   { pattern: ["T","T","X","X","X","T","T"], probability: 0.78, strength: 0.88 },
-  "2-3-2":   { pattern: ["X","X","T","T","T","X","X"], probability: 0.78, strength: 0.88 }
+  "1-1": [
+    { pattern: ["T","X","T","X"], probability: 0.7, strength: 0.8 },
+    { pattern: ["X","T","X","T"], probability: 0.7, strength: 0.8 }
+  ],
+
+  "1-2-1": [
+    { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
+    { pattern: ["X","T","T","X"], probability: 0.65, strength: 0.75 }
+  ],
+
+  "2-1-2": [
+    { pattern: ["T","T","X","T","T"], probability: 0.68, strength: 0.78 },
+    { pattern: ["X","X","T","X","X"], probability: 0.68, strength: 0.78 }
+  ],
+
+  "3-1": [
+    { pattern: ["T","T","T","X"], probability: 0.72, strength: 0.82 },
+    { pattern: ["X","X","X","T"], probability: 0.72, strength: 0.82 }
+  ],
+
+  "1-3": [
+    { pattern: ["T","X","X","X"], probability: 0.72, strength: 0.82 },
+    { pattern: ["X","T","T","T"], probability: 0.72, strength: 0.82 }
+  ],
+
+  "2-2": [
+    { pattern: ["T","T","X","X"], probability: 0.66, strength: 0.76 },
+    { pattern: ["X","X","T","T"], probability: 0.66, strength: 0.76 }
+  ],
+
+  "2-3": [
+    { pattern: ["T","T","X","X","X"], probability: 0.71, strength: 0.81 },
+    { pattern: ["X","X","T","T","T"], probability: 0.71, strength: 0.81 }
+  ],
+
+  "3-2": [
+    { pattern: ["T","T","T","X","X"], probability: 0.73, strength: 0.83 },
+    { pattern: ["X","X","X","T","T"], probability: 0.73, strength: 0.83 }
+  ],
+
+  "4-1": [
+    { pattern: ["T","T","T","T","X"], probability: 0.76, strength: 0.86 },
+    { pattern: ["X","X","X","X","T"], probability: 0.76, strength: 0.86 }
+  ],
+
+  "1-4": [
+    { pattern: ["T","X","X","X","X"], probability: 0.76, strength: 0.86 },
+    { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 }
+  ],
+
+  "3-1-3": [
+    { pattern: ["T","T","T","X","T","T","T"], probability: 0.72, strength: 0.82 },
+    { pattern: ["X","X","X","T","X","X","X"], probability: 0.72, strength: 0.82 }
+  ],
+
+  "2-3-2": [
+    { pattern: ["T","T","X","X","X","T","T"], probability: 0.78, strength: 0.88 },
+    { pattern: ["X","X","T","T","T","X","X"], probability: 0.78, strength: 0.88 }
+  ]
 };
 
 const algo68GB = (cau) => runAlgo(cau, GB68_PATTERNS);
