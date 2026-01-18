@@ -10,10 +10,28 @@ const CAU_FILE = "./cau_all_game.json";
 
 /* ================= GAME LIST ================= */
 const GAMES = {
+  /* ================= GAME SUNWIN ================= */
   SUNWIN: "https://sunwinsaygex-pcl2.onrender.com/api/sun",
+  /* ================= GAME LC97 ================= */
   LC79_THUONG: "https://lc79md5-lun8.onrender.com/lc79/tx",
   LC79_MD5: "https://lc79md5-lun8.onrender.com/lc79/md5",
+  /* ================= GAME 68 GAME BÀI ================= */
   "68GB_MD5": "https://six8-api-5pje.onrender.com/68gbmd5",
+  /* ================= GAME 789CLUB ================= */
+  "https://seven89-wkxd.onrender.com/api/789/tx",
+  /* ================= GAME LUCKYWIN ================= */
+  "https://luckywingugu.onrender.com/luck/md5",
+  "https://luckywingugu.onrender.com/luck8/tx",
+  /* ================= GAME BETVIP ================= */
+  "https://betvip.onrender.com/betvip/md5",
+  "https://betvip.onrender.com/betvip/tx",
+  /* ================= GAME HITCLUB ================= */
+  "https://hitclub-rksy.onrender.com/api/taixiumd5",
+  "https://hitclub-rksy.onrender.com/api/taixiu",
+  /* ================= GAME B52 ================= */
+  "https://b52-si96.onrender.com/api/taixiumd5",
+  "https://b52-si96.onrender.com/api/taixiu",
+  /* ================= GAME SICBO ================= */
   SICBO_SUN: "https://sicsun-9wes.onrender.com/predict",
   SICBO_HITCLUB: "https://sichit-d15h.onrender.com/sicbo"
 };
