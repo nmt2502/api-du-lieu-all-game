@@ -535,7 +535,13 @@ app.get("/api/dudoan/:game", (req, res) => {
 
   const cau = cauStore[game] || "";
   const api = store[game];
-  const [du_doan, do_tin_cay] = algo(game, cau);
+
+  const algoFunc = ALGO_MAP[game];
+  if (!algoFunc) {
+    return res.json({ error: "Game chưa hỗ trợ thuật toán" });
+  }
+
+  const [du_doan, do_tin_cay] = algoFunc(cau.split(""));
 
   res.json({
     ID: "Bi Nhoi Vip Pro",
@@ -548,6 +554,7 @@ app.get("/api/dudoan/:game", (req, res) => {
     do_tin_cay
   });
 });
+
 
 app.listen(PORT, () => {
   console.log("🚀 Server chạy cổng", PORT);
