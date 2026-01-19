@@ -461,7 +461,6 @@ const algo789 = (cau) => runAlgo(cau, CL789_PATTERNS);
 
 /* ================= THUẬT TOÁN SICBO HITCLUB================= */
 const SICBO_SUN_PATTERNS = {
-  CAU_GAY: [
   "1-2-1": [
     { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
     { pattern: ["X","T","T","X"], probability: 0.65, strength: 0.75 }
