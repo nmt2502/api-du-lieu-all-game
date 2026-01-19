@@ -31,6 +31,8 @@ const GAMES = {
   /* ================= GAME B52 ================= */
   B52_TX: "https://b52-si96.onrender.com/api/taixiumd5",
   B52_MD5: "https://b52-si96.onrender.com/api/taixiu",
+  /* ================= SẢNH BACCRAT ================= */
+  Baccarat: "https://bcrapj-9ska.onrender.com/sexy/all",
   /* ================= GAME SICBO ================= */
   SICBO_SUN: "https://sicsun-9wes.onrender.com/predict",
   SICBO_HITCLUB: "https://sichit-d15h.onrender.com/sicbo"
