@@ -135,7 +135,7 @@ const SUNWIN_PATTERNS = {
     { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 }
   ],
 
-  "4": [
+  "CAU_BET": [
     { pattern: ["T","T","T","T"], probability: 0.77, strength: 0.87 },
     { pattern: ["X","X","X","X"], probability: 0.77, strength: 0.87 }
   ],
@@ -460,71 +460,93 @@ const algo789 = (cau) => runAlgo(cau, CL789_PATTERNS);
 /* ================= THUẬT TOÁN B52 MD5================= */
 
 /* ================= THUẬT TOÁN SICBO HITCLUB================= */
-const SICBO_PATTERNS = {
+const SICBO_SUN_PATTERNS = {
   CAU_GAY: [
-    { pattern: "TTTT", next: "X", probability: 0.85 },
-    { pattern: "XXXX", next: "T", probability: 0.85 },
+  "1-2-1": [
+    { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
+    { pattern: ["X","T","T","X"], probability: 0.65, strength: 0.75 }
   ],
-
-  CAU_1_1: [
-    { pattern: "TXTX", next: "T", probability: 0.75 },
-    { pattern: "XTXT", next: "X", probability: 0.75 },
+  "2-1-2": [
+    { pattern: ["T","T","X","T","T"], probability: 0.68, strength: 0.78 },
+    { pattern: ["X","X","T","X","X"], probability: 0.68, strength: 0.78 }
   ],
-
-  CAU_2_1: [
-    { pattern: "TTX", next: "T", probability: 0.7 },
-    { pattern: "XXT", next: "X", probability: 0.7 },
+  "3-1": [
+    { pattern: ["T","T","T","X"], probability: 0.72, strength: 0.82 },
+    { pattern: ["X","X","X","T"], probability: 0.72, strength: 0.82 }
   ],
+  "1-3": [
+    { pattern: ["T","X","X","X"], probability: 0.72, strength: 0.82 },
+    { pattern: ["X","T","T","T"], probability: 0.72, strength: 0.82 }
+  ],
+  "2-2": [
+    { pattern: ["T","T","X","X"], probability: 0.66, strength: 0.76 },
+    { pattern: ["X","X","T","T"], probability: 0.66, strength: 0.76 }
+  ],
+  "2-3": [
+    { pattern: ["T","T","X","X","X"], probability: 0.71, strength: 0.81 },
+    { pattern: ["X","X","T","T","T"], probability: 0.71, strength: 0.81 }
+  ],
+  "3-2": [
+    { pattern: ["T","T","T","X","X"], probability: 0.73, strength: 0.83 },
+    { pattern: ["X","X","X","T","T"], probability: 0.73, strength: 0.83 }
+  ],
+  "4-1": [
+    { pattern: ["T","T","T","T","X"], probability: 0.76, strength: 0.86 },
+    { pattern: ["X","X","X","X","T"], probability: 0.76, strength: 0.86 }
+  ],
+  "1-4": [
+    { pattern: ["T","X","X","X","X"], probability: 0.76, strength: 0.86 },
+    { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 }
+  ]
 };
 
-function algoSICBO_PATTERN(cau) {
+function algoSICBO_SUN_PATTERNS(cau) {
   if (!cau || cau.length < 4) {
     return {
       du_doan: "Chờ Đủ Dữ Liệu",
       dudoan_vi: [],
-      do_tin_cay: "0%",
+      do_tin_cay: "0%"
     };
   }
 
   let best = null;
   let bestLen = 0;
+  let bestScore = 0;
 
-  // 🔹 So khớp TXTX với PATTERNS
-  for (const key in SICBO_PATTERNS) {
-    for (const item of SICBO_PATTERNS[key]) {
-      if (cau.endsWith(item.pattern) && item.pattern.length > bestLen) {
-        best = item;
-        bestLen = item.pattern.length;
+  for (const key in SICBO_SUN_PATTERNS) {
+    for (const item of SICBO_SUN_PATTERNS[key]) {
+      const pStr = item.pattern.join("");
+      if (cau.endsWith(pStr)) {
+        const score =
+          pStr.length * 2 +
+          item.probability * 100 +
+          item.strength * 100;
+
+        if (pStr.length > bestLen || score > bestScore) {
+          best = item;
+          bestLen = pStr.length;
+          bestScore = score;
+        }
       }
     }
   }
 
-  // 🔹 Dự đoán
-  let nextTX;
-  if (best) {
-    nextTX = best.next;
-  } else {
-    // fallback: đảo cầu
-    const last = cau[cau.length - 1];
-    nextTX = last === "T" ? "X" : "T";
-  }
-
+  // 🔁 Đảo nhịp
+  const last = cau[cau.length - 1];
+  const nextTX = last === "T" ? "X" : "T";
   const du_doan = nextTX === "T" ? "Tài" : "Xỉu";
 
   const percent = best
-    ? Math.round(best.probability * 100)
+    ? Math.round((best.probability * 0.6 + best.strength * 0.4) * 100)
     : 60;
 
-  // 🔹 Vị dự đoán 4 số
-  const dudoan_vi =
-    du_doan === "Tài"
-      ? [11, 13, 15, 17]
-      : [4, 6, 8, 10];
+  // 🎯 VỊ CHUẨN THEO BẠN
+  const dudoan_vi = getSicboVi(du_doan);
 
   return {
     du_doan,
     dudoan_vi,
-    do_tin_cay: percent + "%",
+    do_tin_cay: percent + "%"
   };
 }
 
@@ -539,8 +561,7 @@ const ALGO_MAP = {
   LC79_MD5: algoLC_MD5,
   "68GB_MD5": algo68GB,
   "789_THUONG": algo789,
-  SICBO_SUN: algoSICBO_PATTERN,
-  SICBO_HITCLUB: algoSICBO_PATTERN
+  SICBO_SUN: algoSICBO_SUN_PATTERNS,
 };
 
 /* =========================================================
