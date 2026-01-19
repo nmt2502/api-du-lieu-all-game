@@ -42,6 +42,30 @@ const load = (f) =>
 const save = (f, d) => fs.writeFileSync(f, JSON.stringify(d, null, 2));
 const now = () => new Date().toLocaleString("vi-VN");
 
+/* ================= UTIL – SICBO ================= */
+function normalizeCauTX(cau) {
+  if (!Array.isArray(cau) || cau.length === 0) return "";
+
+  // ✅ Trường hợp cau đã là ["T","X","T","X"]
+  if (typeof cau[0] === "string") {
+    return cau.join("");
+  }
+
+  // ✅ Trường hợp cau là tổng số (VD: [11, 9, 14, 8])
+  // hoặc object { tong: number }
+  return cau
+    .map(v => {
+      if (typeof v === "number") {
+        return v >= 11 ? "T" : "X";
+      }
+      if (typeof v === "object" && typeof v.tong === "number") {
+        return v.tong >= 11 ? "T" : "X";
+      }
+      return "";
+    })
+    .join("");
+}
+
 /* =========================================================
    CORE ENGINE – SO KHỚP CHUỖI CON
 ========================================================= */
