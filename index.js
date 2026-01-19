@@ -500,7 +500,9 @@ const SICBO_SUN_PATTERNS = {
 };
 
 function algoSICBO_SUN_PATTERNS(cau) {
-  if (!cau || cau.length < 4) {
+  const cauStr = normalizeCauTX(cau);
+
+  if (!cauStr || cauStr.length < 4) {
     return {
       du_doan: "Chờ Đủ Dữ Liệu",
       dudoan_vi: [],
@@ -512,10 +514,11 @@ function algoSICBO_SUN_PATTERNS(cau) {
   let bestLen = 0;
   let bestScore = 0;
 
-  for (const key in SICBO_SUN_PATTERNS) {
-    for (const item of SICBO_SUN_PATTERNS[key]) {
+  for (const key in SICBO_PATTERNS) {
+    for (const item of SICBO_PATTERNS[key]) {
       const pStr = item.pattern.join("");
-      if (cau.endsWith(pStr)) {
+
+      if (cauStr.endsWith(pStr)) {
         const score =
           pStr.length * 2 +
           item.probability * 100 +
@@ -531,7 +534,7 @@ function algoSICBO_SUN_PATTERNS(cau) {
   }
 
   // 🔁 Đảo nhịp
-  const last = cau[cau.length - 1];
+  const last = cauStr[cauStr.length - 1];
   const nextTX = last === "T" ? "X" : "T";
   const du_doan = nextTX === "T" ? "Tài" : "Xỉu";
 
@@ -539,8 +542,10 @@ function algoSICBO_SUN_PATTERNS(cau) {
     ? Math.round((best.probability * 0.6 + best.strength * 0.4) * 100)
     : 60;
 
-  // 🎯 VỊ CHUẨN THEO BẠN
-  const dudoan_vi = getSicboVi(du_doan);
+  const dudoan_vi =
+    du_doan === "Tài"
+      ? [12, 13, 14, 15]
+      : [6, 7, 8, 9];
 
   return {
     du_doan,
@@ -548,7 +553,6 @@ function algoSICBO_SUN_PATTERNS(cau) {
     do_tin_cay: percent + "%"
   };
 }
-
 /* ================= THUẬT TOÁN SICBO SUN================= */
 
 /* =========================================================
