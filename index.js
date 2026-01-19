@@ -749,6 +749,38 @@ app.get("/api/dudoan/:game", (req, res) => {
   });
 });
 
+/* ================= CHECK API ALL GAME ================= */
+app.get("/check/Api/all", async (req, res) => {
+  const result = [];
+
+  for (const game in GAMES) {
+    const url = GAMES[game];
+    const start = Date.now();
+
+    try {
+      await axios.get(url, { timeout: 5000 });
+
+      result.push({
+        Game: game,
+        Trang_thai: "Sống",
+        Toc_do: Date.now() - start + "ms"
+      });
+    } catch (err) {
+      result.push({
+        Game: game,
+        Trang_thai: "Die",
+        Toc_do: "Timeout/Lỗi"
+      });
+    }
+  }
+
+  res.json({
+    time: now(),
+    total: result.length,
+    data: result
+  });
+});
+
 
 app.listen(PORT, () => {
   console.log("🚀 Server chạy cổng", PORT);
