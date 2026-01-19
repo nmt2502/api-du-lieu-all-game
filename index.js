@@ -460,35 +460,39 @@ const algo789 = (cau) => runAlgo(cau, CL789_PATTERNS);
 /* ================= THUẬT TOÁN B52 MD5================= */
 
 /* ================= THUẬT TOÁN SICBO HITCLUB================= */
-function algoSICBO(cauArr) {
-  if (!Array.isArray(cauArr) || cauArr.length < 5) {
+function algoSICBO_TONG(cauTong) {
+  if (!Array.isArray(cauTong) || cauTong.length < 3) {
     return {
-      du_doan: "CHO",
-      dudoan_vi: "Chờ",
+      du_doan: "Chờ Đủ Dữ Liệu",
+      dudoan_vi: [],
       do_tin_cay: "0%"
     };
   }
 
-  const cau = cauArr.join("");
-  const t = (cau.match(/T/g) || []).length;
-  const x = (cau.match(/X/g) || []).length;
+  let tai = 0;
+  let xiu = 0;
 
-  let du_doan;
+  cauTong.slice(-10).forEach(tong => {
+    if (tong >= 11) tai++;
+    else xiu++;
+  });
 
-  if (Math.abs(t - x) >= 2) {
-    du_doan = t > x ? "XIU" : "TAI";
-  } else {
-    return {
-      du_doan: "CHO",
-      dudoan_vi: "Chờ",
-      do_tin_cay: "0%"
-    };
-  }
+  let du_doan = tai > xiu ? "Xỉu" : "Tài";
+
+  let dudoan_vi =
+    du_doan === "Tài"
+      ? [11, 12, 13, 14, 15, 16, 17]
+      : [4, 5, 6, 7, 8, 9, 10];
+
+  let do_tin_cay = Math.min(
+    90,
+    55 + Math.abs(tai - xiu) * 5
+  ) + "%";
 
   return {
     du_doan,
-    dudoan_vi: du_doan === "TAI" ? "Tài" : "Xỉu",
-    do_tin_cay: "65%"
+    dudoan_vi,
+    do_tin_cay
   };
 }
 
@@ -503,8 +507,8 @@ const ALGO_MAP = {
   LC79_MD5: algoLC_MD5,
   "68GB_MD5": algo68GB,
   "789_THUONG": algo789,
-  SICBO_SUN: algoSICBO,
-  SICBO_HITCLUB: algoSICBO
+  SICBO_SUN: algoSICBO_TONG,
+  SICBO_HITCLUB: algoSICBO_TONG
 };
 
 /* =========================================================
