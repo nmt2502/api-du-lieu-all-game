@@ -500,7 +500,30 @@ const CL789_PATTERNS = {
 const algo789 = (cau) => runAlgo(cau, CL789_PATTERNS);
 
 /* ================= THUẬT TOÁN LUCKYWIN THƯỜNG================= */
+const LUCK_THUONG_PATTERNS = {
+  "1-1": [
+    { pattern: ["T","X","T","X"], probability: 0.73, strength: 0.83 },
+    { pattern: ["X","T","X","T"], probability: 0.73, strength: 0.83 }
+  ],
+  "2-2": [
+    { pattern: ["T","T","X","X"], probability: 0.75, strength: 0.85 },
+    { pattern: ["X","X","T","T"], probability: 0.75, strength: 0.85 }
+  ],
+  "3-1": [
+    { pattern: ["T","T","T","X"], probability: 0.77, strength: 0.87 },
+    { pattern: ["X","X","X","T"], probability: 0.77, strength: 0.87 }
+  ],
+  "1-3": [
+    { pattern: ["T","X","X","X"], probability: 0.77, strength: 0.87 },
+    { pattern: ["X","T","T","T"], probability: 0.77, strength: 0.87 }
+  ],
+  "4-1": [
+    { pattern: ["T","T","T","T","X"], probability: 0.79, strength: 0.89 },
+    { pattern: ["X","X","X","X","T"], probability: 0.79, strength: 0.89 }
+  ]
+};
 
+const algoLUCK_THUONG = (cau) => runAlgo(cau, LUCK_THUONG_PATTERNS);
 /* ================= THUẬT TOÁN LUCKYWIN MD5================= */
 const LUCK_MD5_PATTERNS = {
 "2-4-1-2": [
@@ -596,17 +619,100 @@ const LUCK_MD5_PATTERNS = {
 const algoLUCK = (cau) => runAlgo(cau, LUCK_MD5_PATTERNS);
 
 /* ================= THUẬT TOÁN BETVIP THƯỜNG================= */
+const BET_THUONG_PATTERNS = {
+  "1-1": [
+    { pattern: ["T","X","T","X"], probability: 0.70, strength: 0.80 },
+    { pattern: ["X","T","X","T"], probability: 0.70, strength: 0.80 }
+  ],
+  "2-2": [
+    { pattern: ["T","T","X","X"], probability: 0.72, strength: 0.82 },
+    { pattern: ["X","X","T","T"], probability: 0.72, strength: 0.82 }
+  ],
+  "3-1": [
+    { pattern: ["T","T","T","X"], probability: 0.74, strength: 0.84 },
+    { pattern: ["X","X","X","T"], probability: 0.74, strength: 0.84 }
+  ],
+  "1-3": [
+    { pattern: ["T","X","X","X"], probability: 0.74, strength: 0.84 },
+    { pattern: ["X","T","T","T"], probability: 0.74, strength: 0.84 }
+  ]
+};
+
+const algoBET_THUONG = (cau) => runAlgo(cau, BET_THUONG_PATTERNS);
 
 /* ================= THUẬT TOÁN BETVIP MD5================= */
+const BET_MD5_PATTERNS = {
+  "1-1-1": [
+    { pattern: ["T","X","T"], probability: 0.75, strength: 0.85 },
+    { pattern: ["X","T","X"], probability: 0.75, strength: 0.85 }
+  ],
+  "2-1-2": [
+    { pattern: ["T","T","X","T","T"], probability: 0.78, strength: 0.88 },
+    { pattern: ["X","X","T","X","X"], probability: 0.78, strength: 0.88 }
+  ],
+  "4-1": [
+    { pattern: ["T","T","T","T","X"], probability: 0.80, strength: 0.90 },
+    { pattern: ["X","X","X","X","T"], probability: 0.80, strength: 0.90 }
+  ]
+};
 
+const algoBET_MD5 = (cau) => runAlgo(cau, BET_MD5_PATTERNS);
 /* ================= THUẬT TOÁN HITCLUB THƯỜNG================= */
+const HIT_THUONG_PATTERNS = {
+  "1-2-1": [
+    { pattern: ["T","X","X","T"], probability: 0.73, strength: 0.83 },
+    { pattern: ["X","T","T","X"], probability: 0.73, strength: 0.83 }
+  ],
+  "2-3": [
+    { pattern: ["T","T","X","X","X"], probability: 0.76, strength: 0.86 },
+    { pattern: ["X","X","T","T","T"], probability: 0.76, strength: 0.86 }
+  ],
+  "3-2": [
+    { pattern: ["T","T","T","X","X"], probability: 0.77, strength: 0.87 },
+    { pattern: ["X","X","X","T","T"], probability: 0.77, strength: 0.87 }
+  ]
+};
 
+const algoHIT_THUONG = (cau) => runAlgo(cau, HIT_THUONG_PATTERNS);
 /* ================= THUẬT TOÁN HITCLUB MD5================= */
+const HIT_MD5_PATTERNS = {
+  "1-1": [
+    { pattern: ["T","X","T","X"], probability: 0.74, strength: 0.84 },
+    { pattern: ["X","T","X","T"], probability: 0.74, strength: 0.84 }
+  ],
+  "5-1": [
+    { pattern: ["T","T","T","T","T","X"], probability: 0.81, strength: 0.91 },
+    { pattern: ["X","X","X","X","X","T"], probability: 0.81, strength: 0.91 }
+  ]
+};
 
+const algoHIT_MD5 = (cau) => runAlgo(cau, HIT_MD5_PATTERNS);
 /* ================= THUẬT TOÁN B52 THƯỜNG================= */
+const B52_THUONG_PATTERNS = {
+  "2-2": [
+    { pattern: ["T","T","X","X"], probability: 0.72, strength: 0.82 },
+    { pattern: ["X","X","T","T"], probability: 0.72, strength: 0.82 }
+  ],
+  "3-3": [
+    { pattern: ["T","T","T","X","X","X"], probability: 0.78, strength: 0.88 },
+    { pattern: ["X","X","X","T","T","T"], probability: 0.78, strength: 0.88 }
+  ]
+};
 
+const algoB52_THUONG = (cau) => runAlgo(cau, B52_THUONG_PATTERNS);
 /* ================= THUẬT TOÁN B52 MD5================= */
+const B52_MD5_PATTERNS = {
+  "1-1-2-1": [
+    { pattern: ["T","X","T","T","X"], probability: 0.79, strength: 0.89 },
+    { pattern: ["X","T","X","X","T"], probability: 0.79, strength: 0.89 }
+  ],
+  "6-1": [
+    { pattern: ["T","T","T","T","T","T","X"], probability: 0.83, strength: 0.93 },
+    { pattern: ["X","X","X","X","X","X","T"], probability: 0.83, strength: 0.93 }
+  ]
+};
 
+const algoB52_MD5 = (cau) => runAlgo(cau, B52_MD5_PATTERNS);
 /* ================= THUẬT TOÁN SICBO SUNWIN ================= */
 const SICBO_SUN_PATTERNS = {
   "1-2-1": [
@@ -731,21 +837,122 @@ function algoSICBO_SUN_PATTERNS(cau) {
     do_tin_cay: percent + "%"
   };
 }
-/* ================= THUẬT TOÁN SICBO SUN================= */
-
-/* =========================================================
-   MAP GAME → ALGO
-========================================================= */
-const ALGO_MAP = {
-  SUNWIN: algoSUNWIN,
-  LC79_THUONG: algoLC_THUONG,
-  LC79_MD5: algoLC_MD5,
-  "68GB_MD5": algo68GB,
-  "789_THUONG": algo789,
-  LUCK_MD5: algoLUCK,
-  SICBO_SUN: algoSICBO_SUN_PATTERNS,
+/* ================= THUẬT TOÁN SICBO HIT================= */
+const SICBO_HIT_PATTERNS = {
+  "1-1": [
+    { pattern: ["T","X","T","X"], probability: 0.72, strength: 0.82 },
+    { pattern: ["X","T","X","T"], probability: 0.72, strength: 0.82 }
+  ],
+  "2-1-2": [
+    { pattern: ["T","T","X","T","T"], probability: 0.75, strength: 0.85 },
+    { pattern: ["X","X","T","X","X"], probability: 0.75, strength: 0.85 }
+  ],
+  "3-1": [
+    { pattern: ["T","T","T","X"], probability: 0.78, strength: 0.88 },
+    { pattern: ["X","X","X","T"], probability: 0.78, strength: 0.88 }
+  ],
+  "1-3": [
+    { pattern: ["T","X","X","X"], probability: 0.78, strength: 0.88 },
+    { pattern: ["X","T","T","T"], probability: 0.78, strength: 0.88 }
+  ],
+  "4-1": [
+    { pattern: ["T","T","T","T","X"], probability: 0.80, strength: 0.90 },
+    { pattern: ["X","X","X","X","T"], probability: 0.80, strength: 0.90 }
+  ]
 };
 
+function algoSICBO_HIT(cau) {
+  const cauStr = normalizeCauTX(cau);
+
+  if (!cauStr || cauStr.length < 4) {
+    return {
+      du_doan: "Chờ Đủ Dữ Liệu",
+      dudoan_vi: [],
+      do_tin_cay: "0%"
+    };
+  }
+
+  let best = null;
+  let bestLen = 0;
+  let bestScore = 0;
+
+  for (const key in SICBO_HIT_PATTERNS) {
+    for (const item of SICBO_HIT_PATTERNS[key]) {
+      const pStr = item.pattern.join("");
+
+      if (cauStr.endsWith(pStr)) {
+        const score =
+          pStr.length * 2 +
+          item.probability * 100 +
+          item.strength * 100;
+
+        if (pStr.length > bestLen || score > bestScore) {
+          best = item;
+          bestLen = pStr.length;
+          bestScore = score;
+        }
+      }
+    }
+  }
+
+  const last = cauStr[cauStr.length - 1];
+  const nextTX = last === "T" ? "X" : "T";
+  const du_doan = nextTX === "T" ? "Tài" : "Xỉu";
+
+  const percent = best
+    ? Math.round((best.probability * 0.6 + best.strength * 0.4) * 100)
+    : 60;
+
+  // lấy tổng trước để tính vị
+  const lastTong =
+    typeof cau[cau.length - 1] === "number"
+      ? cau[cau.length - 1]
+      : cau[cau.length - 1]?.tong || (nextTX === "T" ? 11 : 10);
+
+  const dudoan_vi = genSicboVi(lastTong, du_doan);
+
+  return {
+    du_doan,
+    dudoan_vi,
+    do_tin_cay: percent + "%"
+  };
+     }
+/* ================= ALGO MAP ================= */
+
+const ALGO_MAP = {
+  /* ===== SUNWIN ===== */
+  SUNWIN: algoSUNWIN,
+
+  /* ===== LC79 ===== */
+  LC79_THUONG: algoLC_THUONG,
+  LC79_MD5: algoLC_MD5,
+
+  /* ===== 68 GAME BÀI ===== */
+  "68GB_MD5": algo68GB,
+
+  /* ===== 789 CLUB ===== */
+  "789_THUONG": algo789,
+
+  /* ===== LUCKYWIN ===== */
+  LUCK_TX: algoLUCK_THUONG,
+  LUCK_MD5: algoLUCK, // MD5 dùng chung logic TX
+
+  /* ===== BETVIP ===== */
+  BET_THUONG: algoLC_THUONG, // tạm dùng LC ổn định
+  BET_MD5: algoLC_MD5,
+
+  /* ===== HITCLUB ===== */
+  HIT_THUONG: algoLC_THUONG,
+  HIT_MD5: algoLC_MD5,
+
+  /* ===== B52 ===== */
+  B52_TX: algoLC_THUONG,
+  B52_MD5: algoLC_MD5,
+
+  /* ===== SICBO ===== */
+  SICBO_SUN: algoSICBO_SUN_PATTERNS,
+  SICBO_HITCLUB: algoSICBO_HIT
+};
 /* =========================================================
    UPDATE DATA
 ========================================================= */
