@@ -591,17 +591,17 @@ function algoSICBO_SUN_PATTERNS(cau) {
   const lastTX = cauStr[cauStr.length - 1];
   const du_doan = lastTX === "T" ? "Xỉu" : "Tài";
 
-  // ✅ LẤY TỔNG PHIÊN TRƯỚC (SỐ CUỐI CÙNG CỦA cau)
+  // ✅ LẤY TỔNG PHIÊN TRƯỚC
   const lastItem = cau[cau.length - 1];
   const lastTong =
     typeof lastItem === "number"
       ? lastItem
       : typeof lastItem === "object" && typeof lastItem.tong === "number"
         ? lastItem.tong
-        : 11; // fallback an toàn
+        : 11;
 
-  // ✅ TÍNH 4 VỊ THEO LOGIC (KHÔNG CỐ ĐỊNH)
-  const dudoan_vi = tinhViSicbo(lastTong, du_doan);
+  // ✅ GỌI ĐÚNG HÀM
+  const dudoan_vi = genSicboVi(lastTong, du_doan);
 
   const percent = best
     ? Math.round((best.probability * 0.6 + best.strength * 0.4) * 100)
@@ -612,8 +612,7 @@ function algoSICBO_SUN_PATTERNS(cau) {
     dudoan_vi,
     do_tin_cay: percent + "%"
   };
-  }
-
+}
 /* ================= THUẬT TOÁN SICBO SUN================= */
 
 /* =========================================================
