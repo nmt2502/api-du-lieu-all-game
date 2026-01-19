@@ -66,6 +66,36 @@ function normalizeCauTX(cau) {
     .join("");
 }
 
+/* ================= UTIL – SICBO VỊ (KHÔNG RANDOM) ================= */
+function genSicboVi(lastTong, du_doan) {
+  const min = du_doan === "Tài" ? 11 : 4;
+  const max = du_doan === "Tài" ? 17 : 10;
+
+  // Lệch 1 nhịp so với kết quả trước
+  let base = du_doan === "Tài"
+    ? lastTong + 1
+    : lastTong - 1;
+
+  if (base < min) base = min;
+  if (base > max) base = max;
+
+  let vi = du_doan === "Tài"
+    ? [base, base + 2, base + 3, base + 4]
+    : [base, base - 2, base - 3, base - 4];
+
+  // Lọc biên + trùng
+  vi = [...new Set(vi.filter(v => v >= min && v <= max))];
+
+  // Bù đủ 4 vị nếu thiếu
+  let fill = du_doan === "Tài" ? min : max;
+  while (vi.length < 4) {
+    if (!vi.includes(fill)) vi.push(fill);
+    fill = du_doan === "Tài" ? fill + 1 : fill - 1;
+  }
+
+  return vi.sort((a, b) => a - b);
+}
+
 /* =========================================================
    CORE ENGINE – SO KHỚP CHUỖI CON
 ========================================================= */
@@ -557,26 +587,33 @@ function algoSICBO_SUN_PATTERNS(cau) {
     }
   }
 
-  // 🔁 Đảo nhịp
-  const last = cauStr[cauStr.length - 1];
-  const nextTX = last === "T" ? "X" : "T";
-  const du_doan = nextTX === "T" ? "Tài" : "Xỉu";
+  // 🔁 Đảo nhịp TX
+  const lastTX = cauStr[cauStr.length - 1];
+  const du_doan = lastTX === "T" ? "Xỉu" : "Tài";
+
+  // ✅ LẤY TỔNG PHIÊN TRƯỚC (SỐ CUỐI CÙNG CỦA cau)
+  const lastItem = cau[cau.length - 1];
+  const lastTong =
+    typeof lastItem === "number"
+      ? lastItem
+      : typeof lastItem === "object" && typeof lastItem.tong === "number"
+        ? lastItem.tong
+        : 11; // fallback an toàn
+
+  // ✅ TÍNH 4 VỊ THEO LOGIC (KHÔNG CỐ ĐỊNH)
+  const dudoan_vi = tinhViSicbo(lastTong, du_doan);
 
   const percent = best
     ? Math.round((best.probability * 0.6 + best.strength * 0.4) * 100)
     : 60;
-
-  const dudoan_vi =
-    du_doan === "Tài"
-      ? [12, 13, 14, 15]
-      : [6, 7, 8, 9];
 
   return {
     du_doan,
     dudoan_vi,
     do_tin_cay: percent + "%"
   };
-}
+  }
+
 /* ================= THUẬT TOÁN SICBO SUN================= */
 
 /* =========================================================
