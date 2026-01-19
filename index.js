@@ -643,31 +643,31 @@ const SICBO_SUN_PATTERNS = {
   ],
   "1-4": [
     { pattern: ["T","X","X","X","X"], probability: 0.76, strength: 0.86 },
-    { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 },
+    { pattern: ["X","T","T","T","T"], probability: 0.76, strength: 0.86 }
   ],
   "1-3-2": [
     { pattern: ["T","X","X","X","T","T"], probability: 0.77, strength: 0.87 },
-    { pattern: ["X","T","T","T","X","X"], probability: 0.77, strength: 0.87 },
+    { pattern: ["X","T","T","T","X","X"], probability: 0.77, strength: 0.87 }
   ],
   "2-2-6": [
     { pattern: ["X","X","T","T","X","X","X","X","X","X"], probability: 0.78, strength: 0.88 },
-    { pattern: ["T","T","X","X","T","T","T","T","T","T"], probability: 0.78, strength: 0.88 },
+    { pattern: ["T","T","X","X","T","T","T","T","T","T"], probability: 0.78, strength: 0.88 }
   ],
   "1-1-2-1": [
     { pattern: ["T","X","T","T","X"], probability: 0.79, strength: 0.89 },
-    { pattern: ["X","T","X","X","T"], probability: 0.79, strength: 0.89 },
+    { pattern: ["X","T","X","X","T"], probability: 0.79, strength: 0.89 }
   ],
   "6-3-3-2": [
     { pattern: ["T","T","T","T","T","T","X","X","X","T","T","T","X","X"], probability: 0.80, strength: 0.90 },
-    { pattern: ["X","X","X","X","X","X","T","T","T","X","X","X","T","T"], probability: 0.80, strength: 0.90 },
+    { pattern: ["X","X","X","X","X","X","T","T","T","X","X","X","T","T"], probability: 0.80, strength: 0.90 }
   ],
   "1-1-6": [
     { pattern: ["T","X","T","X","T","T","T","T","T","T"], probability: 0.81, strength: 0.91 },
-    { pattern: ["X","T","X","T","X","X","X","X","X","X"], probability: 0.81, strength: 0.91 },
+    { pattern: ["X","T","X","T","X","X","X","X","X","X"], probability: 0.81, strength: 0.91 }
   ],
   "1-1": [
     { pattern: ["T","X","T","X"], probability: 0.82, strength: 0.92 },
-    { pattern: ["X","T","X","T"], probability: 0.82, strength: 0.92 },
+    { pattern: ["X","T","X","T"], probability: 0.82, strength: 0.92 }
   ],
 };
 
@@ -742,7 +742,7 @@ const ALGO_MAP = {
   LC79_MD5: algoLC_MD5,
   "68GB_MD5": algo68GB,
   "789_THUONG": algo789,
-  LUCK_MD5: algoLUCK
+  LUCK_MD5: algoLUCK,
   SICBO_SUN: algoSICBO_SUN_PATTERNS,
 };
 
