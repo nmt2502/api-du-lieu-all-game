@@ -764,21 +764,21 @@ app.get("/check/Api/all", async (req, res) => {
 
       result.push({
         Game: game,
-        Trang_thai: "Sống",
-        Toc_do: Date.now() - start + "ms"
+        Trang_thai: "🟢 Sống",
+        Toc_do: Date.now() - start + " ms"
       });
     } catch (err) {
       result.push({
         Game: game,
-        Trang_thai: "Die",
+        Trang_thai: "🔴 Die",
         Toc_do: "Timeout/Lỗi"
       });
     }
   }
 
   res.json({
-    time: now(),
-    total: result.length,
+    time: now(),                 // ⏰ thời gian hiện tại
+    tong_game: result.length,    // tổng game
     data: result
   });
 });
