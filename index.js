@@ -528,9 +528,9 @@ const LUCK_MD5_PATTERNS = {
     { pattern: ["X","T","T","X","T","T","T","T"], probability: 0.66, strength: 0.76 }
   ],
   "1-2-4": [
-    { pattern: ["T","X","X","T",","T","T","T"], probability: 0.71, strength: 0.81 },
-    { pattern: ["X","T","T","X","X","X","X"], probability: 0.71, strength: 0.81 }
-  ],
+  { pattern: ["T","X","X","T","T","T","T"], probability: 0.71, strength: 0.81 },
+  { pattern: ["X","T","T","X","X","X","X"], probability: 0.71, strength: 0.81 }
+],
   "6-1-4": [
     { pattern: ["X","X","X","X","X","X","T","X","X","X","X"], probability: 0.73, strength: 0.83 },
     { pattern: ["T","T","T","T","T","T","X","T","T","T","T"], probability: 0.73, strength: 0.83 }
@@ -545,19 +545,19 @@ const LUCK_MD5_PATTERNS = {
   ],
   "2-2-1-2": [
     { pattern: ["X","X","T","T","X","T","T"], probability: 0.77, strength: 0.87 },
-    { pattern: ["T","T","X","X","T","X","X"], probability: 0.77, strength: 0.87 },
+    { pattern: ["T","T","X","X","T","X","X"], probability: 0.77, strength: 0.87 }
   ],
   "1-1-5": [
     { pattern: ["X","T","X","X","X","X","X"], probability: 0.78, strength: 0.88 },
-    { pattern: ["T","X","T","T","T","T","T"], probability: 0.78, strength: 0.88 },
+    { pattern: ["T","X","T","T","T","T","T"], probability: 0.78, strength: 0.88 }
   ],
   "2-1-1-3-3": [
     { pattern: ["T","T","X","T","X","X","X","T","T","T"], probability: 0.79, strength: 0.89 },
-    { pattern: ["X","X","T","X","T","T","T","X","X","X"], probability: 0.79, strength: 0.89 },
+    { pattern: ["X","X","T","X","T","T","T","X","X","X"], probability: 0.79, strength: 0.89 }
   ],
   "1-2-1-1": [
     { pattern: ["X","T","T","X","T","X"], probability: 0.80, strength: 0.90 },
-    { pattern: ["T","X","X","T","X","T"], probability: 0.80, strength: 0.90 },
+    { pattern: ["T","X","X","T","X","T"], probability: 0.80, strength: 0.90 }
   ],
   "2-1-2": [
     { pattern: ["T","T","X","T","T"], probability: 0.68, strength: 0.78 },
