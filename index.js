@@ -539,8 +539,8 @@ const ALGO_MAP = {
   LC79_MD5: algoLC_MD5,
   "68GB_MD5": algo68GB,
   "789_THUONG": algo789,
-  SICBO_SUN: algoSICBO_TONG,
-  SICBO_HITCLUB: algoSICBO_TONG
+  SICBO_SUN: algoSICBO_PATTERN,
+  SICBO_HITCLUB: algoSICBO_PATTERN
 };
 
 /* =========================================================
