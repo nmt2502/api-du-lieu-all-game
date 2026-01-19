@@ -98,6 +98,25 @@ function genSicboVi(lastTong, du_doan) {
   return vi.sort((a, b) => a - b);
 }
 
+/* ================= UTIL – KẾT QUẢ ================= */
+function getKetQuaFromData(data) {
+  // Ưu tiên có sẵn
+  if (data.ket_qua) return data.ket_qua;
+
+  // Tổng số
+  const tong =
+    data.tong ??
+    data.total ??
+    data.last_tong ??
+    data.lastTong;
+
+  if (typeof tong === "number") {
+    return tong >= 11 ? "Tài" : "Xỉu";
+  }
+
+  return "N/A";
+}
+
 /* =========================================================
    CORE ENGINE – SO KHỚP CHUỖI CON
 ========================================================= */
@@ -1009,7 +1028,9 @@ app.get("/api/dudoan/:game", (req, res) => {
   const store = load(DATA_FILE);
   const cauStore = load(CAU_FILE);
 
-  if (!store[game]) return res.json({ error: "Chưa có dữ liệu" });
+  if (!store[game]) {
+    return res.json({ error: "Chưa có dữ liệu" });
+  }
 
   const cau = cauStore[game] || "";
   const api = store[game];
@@ -1023,12 +1044,22 @@ app.get("/api/dudoan/:game", (req, res) => {
   const isSicbo =
     game === "SICBO_SUN" || game === "SICBO_HITCLUB";
 
+  // ✅ KẾT QUẢ PHIÊN TRƯỚC
+  const ket_qua =
+    typeof api.tong === "number"
+      ? api.tong >= 11
+        ? "Tài"
+        : "Xỉu"
+      : "N/A";
+
   /* ===== FORMAT SICBO ===== */
   if (isSicbo) {
     return res.json({
       ID: "Bi Nhoi Vip Pro",
+      time: now(),                    // ✅ thời gian hiện tại
       Game: game,
       phien_hien_tai: api.phien_hien_tai,
+      ket_qua,                        // ✅ thêm dưới phiên
       tong: api.tong,
       cau,
       du_doan: result.du_doan,
@@ -1042,8 +1073,10 @@ app.get("/api/dudoan/:game", (req, res) => {
 
   return res.json({
     ID: "Bi Nhoi Vip Pro",
+    time: now(),                      // ✅ thời gian hiện tại
     Game: game,
     phien_hien_tai: api.phien_hien_tai,
+    ket_qua,                          // ✅ thêm dưới phiên
     tong: api.tong,
     cau,
     du_doan,
