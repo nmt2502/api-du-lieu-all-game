@@ -460,39 +460,71 @@ const algo789 = (cau) => runAlgo(cau, CL789_PATTERNS);
 /* ================= THUẬT TOÁN B52 MD5================= */
 
 /* ================= THUẬT TOÁN SICBO HITCLUB================= */
-function algoSICBO_TONG(cauTong) {
-  if (!Array.isArray(cauTong) || cauTong.length < 3) {
+const SICBO_PATTERNS = {
+  CAU_GAY: [
+    { pattern: "TTTT", next: "X", probability: 0.85 },
+    { pattern: "XXXX", next: "T", probability: 0.85 },
+  ],
+
+  CAU_1_1: [
+    { pattern: "TXTX", next: "T", probability: 0.75 },
+    { pattern: "XTXT", next: "X", probability: 0.75 },
+  ],
+
+  CAU_2_1: [
+    { pattern: "TTX", next: "T", probability: 0.7 },
+    { pattern: "XXT", next: "X", probability: 0.7 },
+  ],
+};
+
+function algoSICBO_PATTERN(cau) {
+  if (!cau || cau.length < 4) {
     return {
       du_doan: "Chờ Đủ Dữ Liệu",
       dudoan_vi: [],
-      do_tin_cay: "0%"
+      do_tin_cay: "0%",
     };
   }
 
-  let tai = 0;
-  let xiu = 0;
+  let best = null;
+  let bestLen = 0;
 
-  cauTong.slice(-10).forEach(tong => {
-    if (tong >= 11) tai++;
-    else xiu++;
-  });
+  // 🔹 So khớp TXTX với PATTERNS
+  for (const key in SICBO_PATTERNS) {
+    for (const item of SICBO_PATTERNS[key]) {
+      if (cau.endsWith(item.pattern) && item.pattern.length > bestLen) {
+        best = item;
+        bestLen = item.pattern.length;
+      }
+    }
+  }
 
-  let du_doan = tai > xiu ? "Xỉu" : "Tài";
+  // 🔹 Dự đoán
+  let nextTX;
+  if (best) {
+    nextTX = best.next;
+  } else {
+    // fallback: đảo cầu
+    const last = cau[cau.length - 1];
+    nextTX = last === "T" ? "X" : "T";
+  }
 
-  let dudoan_vi =
+  const du_doan = nextTX === "T" ? "Tài" : "Xỉu";
+
+  const percent = best
+    ? Math.round(best.probability * 100)
+    : 60;
+
+  // 🔹 Vị dự đoán 4 số
+  const dudoan_vi =
     du_doan === "Tài"
-      ? [11, 12, 13, 14, 15, 16, 17]
-      : [4, 5, 6, 7, 8, 9, 10];
-
-  let do_tin_cay = Math.min(
-    90,
-    55 + Math.abs(tai - xiu) * 5
-  ) + "%";
+      ? [11, 13, 15, 17]
+      : [4, 6, 8, 10];
 
   return {
     du_doan,
     dudoan_vi,
-    do_tin_cay
+    do_tin_cay: percent + "%",
   };
 }
 
