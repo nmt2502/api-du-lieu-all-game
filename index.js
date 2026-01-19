@@ -459,7 +459,7 @@ const algo789 = (cau) => runAlgo(cau, CL789_PATTERNS);
 
 /* ================= THUẬT TOÁN B52 MD5================= */
 
-/* ================= THUẬT TOÁN SICBO HITCLUB================= */
+/* ================= THUẬT TOÁN SICBO SUNWIN ================= */
 const SICBO_SUN_PATTERNS = {
   "1-2-1": [
     { pattern: ["T","X","X","T"], probability: 0.65, strength: 0.75 },
@@ -514,8 +514,8 @@ function algoSICBO_SUN_PATTERNS(cau) {
   let bestLen = 0;
   let bestScore = 0;
 
-  for (const key in SICBO_PATTERNS) {
-    for (const item of SICBO_PATTERNS[key]) {
+  for (const key in SICBO_SUN_PATTERNS) {
+    for (const item of SICBO_SUN_PATTERNS[key]) {
       const pStr = item.pattern.join("");
 
       if (cauStr.endsWith(pStr)) {
