@@ -11,31 +11,31 @@ const CAU_FILE = "./cau_all_game.json";
 /* ================= GAME LIST ================= */
 const GAMES = {
   /* ================= GAME SUNWIN ================= */
-  SUNWIN: "https://sunwinsaygex-pcl2.onrender.com/api/sun",
+  SUNWIN: "https://trails-wish-motel-legacy.trycloudflare.com/api/tx",
   /* ================= GAME LC97 ================= */
-  LC79_THUONG: "https://lc79md5-lun8.onrender.com/lc79/tx",
-  LC79_MD5: "https://lc79md5-lun8.onrender.com/lc79/md5",
+  LC79_THUONG: "https://thread-broke-artwork-compound.trycloudflare.com/api/tx",
+  LC79_MD5: "https://thread-broke-artwork-compound.trycloudflare.com/api/txmd5",
   /* ================= GAME 68 GAME BÀI ================= */
-  "68GB_MD5": "https://six8-api-5pje.onrender.com/68gbmd5",
+  "68GB_MD5": "https://speeds-built-attendance-dedicated.trycloudflare.com/api/txmd5",
   /* ================= GAME 789CLUB ================= */
-  "789_THUONG": "https://seven89-wkxd.onrender.com/api/789/tx",
+  "789_THUONG": "https://packet-veterinary-organ-ministers.trycloudflare.com/api/tx",
   /* ================= GAME LUCKYWIN ================= */
   LUCK_TX: "https://luckywingugu.onrender.com/luck/md5",
-  LUCK_MD5: "https://luckywingugu.onrender.com/luck8/tx",
+  LUCK_MD5: "https://drawn-legislation-applicant-roberts.trycloudflare.com/api/txmd5",
   /* ================= GAME BETVIP ================= */
-  BET_THUONG: "https://betvip.onrender.com/betvip/md5",
-  BET_MD5: "https://betvip.onrender.com/betvip/tx",
+  BET_THUONG: "https://stored-could-elder-mini.trycloudflare.com/api/tx",
+  BET_MD5: "https://stored-could-elder-mini.trycloudflare.com/api/txmd5",
   /* ================= GAME HITCLUB ================= */
-  HIT_THUONG: "https://hitclub-rksy.onrender.com/api/taixiumd5",
-  HIT_MD5: "https://hitclub-rksy.onrender.com/api/taixiu",
+  HIT_THUONG: "https://subdivision-term-came-attempting.trycloudflare.com/api/tx",
+  HIT_MD5: "https://subdivision-term-came-attempting.trycloudflare.com/api/txmd5",
   /* ================= GAME B52 ================= */
-  B52_TX: "https://b52-si96.onrender.com/api/taixiumd5",
-  B52_MD5: "https://b52-si96.onrender.com/api/taixiu",
+  B52_TX: "https://years-expiration-autos-concert.trycloudflare.com/taixiu",
+  B52_MD5: "https://years-expiration-autos-concert.trycloudflare.com/txmd5",
   /* ================= SẢNH BACCRAT ================= */
-  Baccarat: "https://bcrapj-9ska.onrender.com/sexy/all",
+  Baccarat: "https://lotus-resolved-shopzilla-acdbentity.trycloudflare.com/api/bcr",
   /* ================= GAME SICBO ================= */
-  SICBO_SUN: "https://sicsun-9wes.onrender.com/predict",
-  SICBO_HITCLUB: "https://sichit-d15h.onrender.com/sicbo"
+  SICBO_SUN: "https://blowing-proved-pick-importantly.trycloudflare.com/api/sunsicbo",
+  SICBO_HITCLUB: "https://leslie-richardson-rrp-virtue.trycloudflare.com/sicbo/hitclub"
 };
 
 /* ================= UTIL ================= */
